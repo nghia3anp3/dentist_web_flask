@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HQT CSDL</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    .custom-font {
+      font-family: 'Your Font Name', serif;
+      font-size: 80px;
+    }
+
+    #welcome{
+      position: absolute;
+      left: 100px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://bulma.io">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL70xIMknj57aIZrplKeiyDPotvMhepi7eb0SrVXXisIAUbS8w" width="30" height="15">
+      </a>
+  
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+  
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item">
+          Home
+        </a>
+  
+        <a class="navbar-item">
+          Arrange an appointment
+        </a>
+  
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+  
+          <div class="navbar-dropdown">
+            <a class="navbar-item">
+              About
+            </a>
+            <a class="navbar-item">
+              Jobs
+            </a>
+            <a class="navbar-item">
+              Contact
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item">
+              Report an issue
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero is-success is-fullheight">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-8">
+            <p id="welcome" style="font-size: 80px;">Welcome to <br> Dentist Center!</p>
+          </div>
+          <div class="column is-2-tablet is-4-desktop is-3-widescreen">
+            <form action="" class="box">
+              <div class="field">
+                <h1>Email</h1>
+                <div class="control has-icons-left">
+                  <input type="phone" placeholder="0123456789" class="input" id="username" autocomplete="additional-name">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-envelope"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="field">
+                <h1>Password</h1>
+                <div class="control has-icons-left">
+                  <input type="password" placeholder="*******" class="input" id="password" required>
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-lock"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="field">
+                <button class="button is-success" id="loginButton">
+                  Login
+                </button>
+              </div>
+                <div class="field">
+                  <p>You don't have an account? <a class="has-text-primary" href="signup.html">Sign up!</a></p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        <strong>Dentist Management by 5 chú hề</strong> by <a href="https://www.facebook.com/nghia.lenguyentrong.7/">5 chú hề</a>.
+      </p>
+    </div>
+  </footer>
+  <script src="static/login.js"></script>
+  <script src="static/jquery-3.7.1.min.js"></script>
+  </script>
+  <script>
+    $(document).ready(function() {
+        $("#loginButton").click(function() {
+            var username = $("#username").val();
+            var password = $("#password").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/login",
+                data: { username: username, password: password },
+                success: function(response) {
+                    if (response.message) {
+                        alert(response.message);
+                    } else {
+                        window.location.href = response;
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+</html>

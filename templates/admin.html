@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        #test-column {
+            background-color: #FF5733; /* Đổi màu nền thành màu cam */
+        }
+        
+        .block:not(:last-child) {
+            margin-bottom: 2rem;
+        }
+
+        .designed-font {
+            color: #FFF;
+            font-family: Outfit;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: normal;
+        }
+
+        .button-border {
+            width: 249px;
+            height: 55px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background-color: rgba(104, 138, 222, 0.48); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            margin: 20px;
+		}
+
+        .center-items {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-left {
+            border-right: white 2px;
+            border-style: solid;
+            border-bottom: none;
+        }
+        .topbar{
+            background-color: rgb(54, 48, 179);
+            border-right: black 1px;
+            border-style: solid;
+            border-bottom: none;
+            height: 60px;
+        }
+        .input{
+            margin: 20px;
+            width: 95%;
+        }
+
+        .designed-font{
+            font-family: 'Roboto Mono', monospace;
+            font-size: medium;
+        }
+        .function-font{
+            font-family: 'Roboto Mono', monospace;
+            font-size: large;
+            color: black;
+        }
+        .button-active{
+            width: 249px;
+            height: 55px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background-color: rgba(28, 156, 192, 0.89); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar columns block">
+        <div class="column is-2 center-items topbar-left">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="22" viewBox="0 0 18 22" fill="none">
+                <path d="M9 11H16C15.47 15.11 12.72 18.78 9 19.92V11H2V5.3L9 2.19M9 0L0 4V10C0 15.55 3.84 20.73 9 22C14.16 20.73 18 15.55 18 10V4L9 0Z" fill="white"/>
+            </svg>
+            <h1 class="designed-font">Admin Portal</h1>
+        </div>
+        <div class="column center-items">
+            <h1 class="designed-font" style="font-size: 20px;">Trình quản lý tài khoản</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column is-3 block center-items">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.4548 5.41575C21.647 5.70687 21.615 6.10248 21.3587 6.35876L12.1663 15.5511C12.0721 15.6454 11.9544 15.7128 11.8255 15.7465L7.99709 16.7465C7.87223 16.7791 7.74352 16.7784 7.62259 16.7476C7.49402 16.7149 7.37425 16.6482 7.27723 16.5511C7.08896 16.3629 7.01462 16.0889 7.08191 15.8313L8.08191 12.0028C8.11138 11.89 8.16667 11.7786 8.24316 11.6912L17.4696 2.46967C17.5504 2.38891 17.6477 2.32846 17.7535 2.29163C17.832 2.26432 17.9152 2.25 17.9999 2.25C18.1989 2.25 18.3896 2.32902 18.5303 2.46967L21.3587 5.2981C21.3953 5.33471 21.4273 5.37416 21.4548 5.41575ZM19.7677 5.82843L17.9999 4.06066L9.48178 12.5788L8.85679 14.9716L11.2496 14.3466L19.7677 5.82843Z" fill="#1D77FF"/>
+                <path d="M19.6413 17.1603C19.9147 14.8227 20.0017 12.4688 19.9023 10.1208C19.8975 10.0084 19.9398 9.89898 20.0194 9.81942L21.0027 8.83609C21.1236 8.71519 21.3302 8.79194 21.3415 8.96254C21.5264 11.7522 21.4563 14.5545 21.1311 17.3346C20.8946 19.3571 19.2703 20.9421 17.2582 21.167C13.7916 21.5544 10.2083 21.5544 6.74171 21.167C4.72965 20.9421 3.10532 19.3571 2.86876 17.3346C2.45423 13.7903 2.45423 10.2097 2.86876 6.66543C3.10532 4.6429 4.72965 3.05789 6.74171 2.83301C9.37146 2.5391 12.0684 2.46815 14.7306 2.62016C14.9022 2.62996 14.9804 2.83757 14.8589 2.95909L13.8663 3.95165C13.7876 4.03034 13.6797 4.07261 13.5685 4.06885C11.342 3.99376 9.10049 4.07872 6.90832 4.32373C5.57821 4.47239 4.51272 5.522 4.35861 6.83968C3.95761 10.2682 3.95761 13.7318 4.35861 17.1603C4.51272 18.478 5.57821 19.5276 6.90832 19.6763C10.2642 20.0513 13.7357 20.0513 17.0916 19.6763C18.4217 19.5276 19.4872 18.478 19.6413 17.1603Z" fill="#1D77FF"/>
+            </svg>
+            <h1 style="font-family: 'Roboto Mono', monospace; font-size: 30px; margin-right: 45px;">Chức Năng</h1>
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="50" height="15" viewBox="0 0 8 15" fill="none">
+                <path d="M1.00176 14.0292C0.768108 14.0297 0.541672 13.9483 0.36176 13.7992C0.260501 13.7153 0.1768 13.6122 0.115448 13.4958C0.0540956 13.3795 0.0162993 13.2522 0.00422342 13.1212C-0.00785244 12.9902 0.00602958 12.8582 0.0450741 12.7326C0.0841185 12.607 0.147558 12.4903 0.23176 12.3892L4.71176 7.02924L0.39176 1.65924C0.308694 1.55695 0.246663 1.43925 0.209231 1.31291C0.171799 1.18657 0.159705 1.05408 0.173645 0.923055C0.187584 0.792027 0.227281 0.665045 0.290454 0.549408C0.353628 0.433772 0.439033 0.33176 0.54176 0.249237C0.645226 0.158201 0.766392 0.0895333 0.897654 0.0475443C1.02892 0.00555526 1.16744 -0.00884844 1.30453 0.00523645C1.44163 0.0193213 1.57433 0.0615911 1.69431 0.129393C1.81429 0.197195 1.91897 0.289065 2.00176 0.399237L6.83176 6.39924C6.97884 6.57817 7.05925 6.80261 7.05925 7.03424C7.05925 7.26586 6.97884 7.4903 6.83176 7.66924L1.83176 13.6692C1.73144 13.7903 1.60401 13.8859 1.4598 13.9485C1.31559 14.011 1.15867 14.0387 1.00176 14.0292Z" fill="black"/>
+            </svg> -->
+        </div>
+        <div class="columns">
+            <div class="column function is-3">
+                <div class="block button-border show-create">
+                    <h1 class="function-font">
+                        Tạo tài khoản
+                    </h1>
+                </div>
+                <div class="block button-border show-lock">
+                    <h1 class="function-font">
+                        Khóa tài khoản
+                    </h1>
+                </div><div class="block button-border">
+                    <h1 class="function-font">
+                        Quản lý thuốc
+                    </h1>
+                </div>
+            </div>
+            <div class="column functional" id="create-form" style="margin-left: 20px; display: none;">
+                <div>
+                    <h1 class="function-font">Thông tin tài khoản:</h1>
+                </div>
+                <div class="field block">
+                      <input class="input" type="phone" placeholder="Phone">
+                      <input class="input" type="password" placeholder="Password">
+                </div>  
+                <!--  -->
+                <div class="columns">
+                    <div class="column is-2">
+                        <h1 class="function-font">Chức năng: </h1>
+                    </div>
+                    <div class="column">
+                        <div class="select is-primary">
+                            <select>
+                              <option>Chọn chức năng</option>
+                              <option>Bác Sĩ</option>
+                              <option>Khách hàng</option>
+                            </select>
+                          </div>
+                    </div>
+                </div>
+                <!--  -->
+                <div>
+                    <h1 class="function-font">Thông tin cá nhân:</h1>
+                </div>
+                <div class="field">
+                    <input class="input" type="name" placeholder="Name">
+                </div>
+                <div class="columns is-centered">
+                    <div class="column is-6">
+                      <div class="buttons is-centered">
+                        <button class="button" id="create-button">Đăng ký</button>
+                      </div>
+                    </div>
+                </div>
+            </div>  
+
+            <div class="column functional" id="lock-form" style="margin-left: 20px;display: none;">
+                <div>
+                    <h1 class="function-font">Nhập số điện thoại của tài khoản cần khóa:</h1>
+                </div>
+                <div class="field block">
+                      <input class="input" type="phone" placeholder="Phone">
+                </div>  
+                <div class="columns is-centered">
+                    <div class="column is-6">
+                      <div class="buttons is-centered">
+                        <button class="button" id="lock-button">Khóa tài khoản</button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    <script src="static/index.js"></script>
+    <script src="static/jquery-3.7.1.min.js"></script>
+</body>
+</html>
+
