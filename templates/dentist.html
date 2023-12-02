@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dentist.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Font Link for Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <script src="static/dentist.js" defer></script>
+    <style>
+        #test-column {
+            background-color: #FF5733; /* Đổi màu nền thành màu cam */
+        }
+        
+        .block:not(:last-child) {
+            margin-bottom: 2rem;
+        }
+
+        .designed-font {
+            color: #FFF;
+            font-family: Outfit;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 800;
+            line-height: normal;
+        }
+
+        .button-border {
+            width: 450px;
+            height: 55px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background-color: rgba(104, 138, 222, 0.48); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+		}
+
+        .center-items {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-left {
+            border-right: white 2px;
+            border-style: solid;
+            border-bottom: none;
+        }
+        .topbar{
+            background-color: rgb(42, 179, 124);
+            border-right: black 1px;
+            border-style: solid;
+            border-bottom: none;
+            height: 60px;
+        }
+        .input{
+            margin: 20px;
+            width: 95%;
+        }
+
+        .designed-font{
+            font-family: 'Roboto Mono', monospace;
+            font-size: medium;
+        }
+        .function-font{
+            font-family: 'Roboto Mono', monospace;
+            font-size: large;
+            color: black;
+        }
+        .button-active{
+            width: 249px;
+            height: 55px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background-color: rgba(28, 156, 192, 0.89); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Style cho header của bảng */
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Style cho dòng dữ liệu trong bảng */
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Style cho dòng chẵn */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .function-icon{
+            font-size: 30px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .custom-button{
+            border: none;
+            background-color: transparent;
+            /* Để hình ảnh hiển thị bên trong button */
+            background-size: cover;
+        }
+        .scrollable-table {
+        max-height: 450px; 
+        overflow-y: auto;
+        }
+
+        .holder-information {
+            border-radius: 20px ;
+            background-color: rgb(182, 248, 226); padding: 20px; margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar columns block">
+        <div class="column is-2 center-items topbar-left">
+            <span>
+                <i class="fa-solid fa-tooth" style="font-size: 25px; margin-right: 10px;"></i>
+            </span>
+            <h1 class="designed-font">Dentist Portal</h1>
+        </div>
+        <div class="column center-items">
+            <h1 class="designed-font" style="font-size: 20px;">Trình quản lý tài khoản nha sĩ</h1>
+        </div>
+        <div class="column is-1 center-items">
+            <button class="button is-medium" id="logout">
+                <span class="icon">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column is-3 block center-items">
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.4548 5.41575C21.647 5.70687 21.615 6.10248 21.3587 6.35876L12.1663 15.5511C12.0721 15.6454 11.9544 15.7128 11.8255 15.7465L7.99709 16.7465C7.87223 16.7791 7.74352 16.7784 7.62259 16.7476C7.49402 16.7149 7.37425 16.6482 7.27723 16.5511C7.08896 16.3629 7.01462 16.0889 7.08191 15.8313L8.08191 12.0028C8.11138 11.89 8.16667 11.7786 8.24316 11.6912L17.4696 2.46967C17.5504 2.38891 17.6477 2.32846 17.7535 2.29163C17.832 2.26432 17.9152 2.25 17.9999 2.25C18.1989 2.25 18.3896 2.32902 18.5303 2.46967L21.3587 5.2981C21.3953 5.33471 21.4273 5.37416 21.4548 5.41575ZM19.7677 5.82843L17.9999 4.06066L9.48178 12.5788L8.85679 14.9716L11.2496 14.3466L19.7677 5.82843Z" fill="#1D77FF"/>
+                <path d="M19.6413 17.1603C19.9147 14.8227 20.0017 12.4688 19.9023 10.1208C19.8975 10.0084 19.9398 9.89898 20.0194 9.81942L21.0027 8.83609C21.1236 8.71519 21.3302 8.79194 21.3415 8.96254C21.5264 11.7522 21.4563 14.5545 21.1311 17.3346C20.8946 19.3571 19.2703 20.9421 17.2582 21.167C13.7916 21.5544 10.2083 21.5544 6.74171 21.167C4.72965 20.9421 3.10532 19.3571 2.86876 17.3346C2.45423 13.7903 2.45423 10.2097 2.86876 6.66543C3.10532 4.6429 4.72965 3.05789 6.74171 2.83301C9.37146 2.5391 12.0684 2.46815 14.7306 2.62016C14.9022 2.62996 14.9804 2.83757 14.8589 2.95909L13.8663 3.95165C13.7876 4.03034 13.6797 4.07261 13.5685 4.06885C11.342 3.99376 9.10049 4.07872 6.90832 4.32373C5.57821 4.47239 4.51272 5.522 4.35861 6.83968C3.95761 10.2682 3.95761 13.7318 4.35861 17.1603C4.51272 18.478 5.57821 19.5276 6.90832 19.6763C10.2642 20.0513 13.7357 20.0513 17.0916 19.6763C18.4217 19.5276 19.4872 18.478 19.6413 17.1603Z" fill="#1D77FF"/>
+            </svg>
+            <h1 style="font-family: 'Roboto Mono', monospace; font-size: 30px; margin-right: 45px;">Chức Năng</h1> -->
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="50" height="15" viewBox="0 0 8 15" fill="none">
+                <path d="M1.00176 14.0292C0.768108 14.0297 0.541672 13.9483 0.36176 13.7992C0.260501 13.7153 0.1768 13.6122 0.115448 13.4958C0.0540956 13.3795 0.0162993 13.2522 0.00422342 13.1212C-0.00785244 12.9902 0.00602958 12.8582 0.0450741 12.7326C0.0841185 12.607 0.147558 12.4903 0.23176 12.3892L4.71176 7.02924L0.39176 1.65924C0.308694 1.55695 0.246663 1.43925 0.209231 1.31291C0.171799 1.18657 0.159705 1.05408 0.173645 0.923055C0.187584 0.792027 0.227281 0.665045 0.290454 0.549408C0.353628 0.433772 0.439033 0.33176 0.54176 0.249237C0.645226 0.158201 0.766392 0.0895333 0.897654 0.0475443C1.02892 0.00555526 1.16744 -0.00884844 1.30453 0.00523645C1.44163 0.0193213 1.57433 0.0615911 1.69431 0.129393C1.81429 0.197195 1.91897 0.289065 2.00176 0.399237L6.83176 6.39924C6.97884 6.57817 7.05925 6.80261 7.05925 7.03424C7.05925 7.26586 6.97884 7.4903 6.83176 7.66924L1.83176 13.6692C1.73144 13.7903 1.60401 13.8859 1.4598 13.9485C1.31559 14.011 1.15867 14.0387 1.00176 14.0292Z" fill="black"/>
+            </svg> -->
+        </div>
+        <div class="columns">
+            <div class="column function is-5">
+                <div class="block button-border show-create">
+                    <h1 class="function-font">
+                        Thêm hồ sơ
+                    </h1>
+                </div>
+
+                <div class="calender block wrapper">
+                    <header>
+                        <p class="current-date"></p>
+                        <div class="icons">
+                          <span id="prev" class="material-symbols-rounded">chevron_left</span>
+                          <span id="next" class="material-symbols-rounded">chevron_right</span>
+                        </div>
+                      </header>
+                      <div class="calendar">
+                        <ul class="weeks">
+                          <li>Sun</li>
+                          <li>Mon</li>
+                          <li>Tue</li>
+                          <li>Wed</li>
+                          <li>Thu</li>
+                          <li>Fri</li>
+                          <li>Sat</li>
+                        </ul>
+                        <ul class="days"></ul>
+                      </div>
+                </div>
+            </div>
+            
+            <div class="column functional" id="create-form" style="margin-left: 20px; display: none;">
+                <div class="holder-information">
+                    <div class="block " style="display: flex; align-items: center; justify-content: center;">
+                        <h1 class="function-font" style="font-size: 30px;">Hồ sơ bệnh nhân</h1>
+                        <div class="column is-1" style=" position: absolute; right: 60px;">
+                            <button class="custom-button button is-active add-pills">
+                                <i class="fa-solid fa-pills" style="font-size: 20px;"></i>
+                                <span>Thêm thuốc</span>
+                            </button> 
+                        </div>
+                    </div>
+                    <div class="field block">
+                        <h1>Mã hồ sơ:</h1>
+                          <input class="input" type="name" placeholder="Mã hồ sơ">
+                    </div> 
+                    <div class="field block">
+                        <h1>Số điện thoại người dùng:</h1>
+                          <input class="input" type="name" placeholder="Phone">
+                    </div> 
+                    <div class="field block">
+                        <h1> Ngày khám:</h1>
+                          <input class="input" type="date">
+                    </div>  
+    
+                    <div class="field block">
+                        <h1> Người thực hiện khám:</h1>
+                          <input class="input" type="name" placeholder="Họ và tên">
+                    </div> 
+                    <div class="columns" style="display: flex; justify-content: center; align-items: center;">
+                        <div class="column is-3">
+                            <h1 class="function-font">Dịch vụ sử dụng: </h1>
+                        </div>
+                        <div class="column">
+                            <div class="select is-primary">
+                                <select>
+                                  <option>X-Quang</option>
+                                  <option>Trám răng</option>
+                                  <option>Cạo vôi</option>
+                                </select>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <!--  -->
+                <div class="holder-information" style="display: none;">
+                    <div class="column" id="medicine-list">
+                        <div class="block" style="display: flex; align-items: center; justify-content: center;">
+                            <h1 class="function-font" style="font-size: 30px;" >Danh sách thuốc</h1>
+                            <span style="position: absolute; right: 30px;">
+                                <button class="custom-button button is-active" id="add">
+                                    <i class="fa-solid fa-file-circle-plus function-icon"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="columns field">
+                            <div class="column is-7" style="display: flex; align-items: center;">
+                                <h1> Mã thuốc:</h1>
+                                <input class="input" style="width: 30%;" type="mathuoc" placeholder="Mã thuốc">
+                            </div>
+                            
+                            <div class="column" style="display: flex; align-items: center;">
+                                <h1> Số lượng:</h1>
+                                <input class="input" style="width: 40%;" type="soluong" placeholder="1">
+                            </div>
+
+                            <div class="column is-2" style="display: flex; align-items: center;">
+                                <button class="custom-button button is-active delete-btn">
+                                    <i class="fa-solid fa-trash function-icon" style="font-size: 20px; margin-left: 25px;"></i>
+                                </button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns is-centered">
+                    <div class="column is-6">
+                    <div class="buttons is-centered">
+                        <button class="button" id="create-button">Thêm hồ sơ</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div id="show-schedual" style="display: none; width: -webkit-fill-available;">
+                <div class="schedual">
+                    <i class="fa-solid fa-exclamation" style="margin-right: 10px;"></i>
+                    <span>Không có lịch hẹn</span>
+                </div>     
+            </div>  
+            </div>  
+        </div>
+      </div>
+    <script src="static/dentist.js"></script>
+    <script src="static/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#logout").click(function() {
+                fetch('/logout', {
+                    method: 'GET'
+                })  
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Logged out successfully');
+                        window.location.href = response.url;
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
