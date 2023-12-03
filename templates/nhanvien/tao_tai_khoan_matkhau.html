@@ -1,0 +1,44 @@
+<div class="modal modal-sheet position-static d-block bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog" id="modalSigning">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-5 pt-0">
+        <form class="">
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-3" id="pass_id1" placeholder="Password">
+            <label for="pass_id1">Nhập mật khẩu</label>
+          </div>
+          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" id="sigupbutton12" onclick="validateAndSubmit_pass()">Đăng ký</button>
+          <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function validateAndSubmit_pass() {
+  // Get the password input element
+  var passwordInput = document.getElementById('pass_id1');
+  
+  // Get the entered password
+  var password = passwordInput.value;
+  
+  // Define your password validation criteria
+  var passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/;
+  
+  // Check if the password meets the criteria
+  if (passwordRegex.test(password)) {
+    // If valid, you can perform further actions or submit the form
+    alert('Password is valid!');
+    location.reload();
+  } else {
+    // If not valid, prompt the user to input again
+    alert('Please enter a valid password. It must contain at least 8 characters, including at least one letter and one number.');
+    // Clear the password input field
+    passwordInput.value = '';
+  }
+}
+</script>

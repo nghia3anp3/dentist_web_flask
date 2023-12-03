@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <title>Dentist Register</title>
+</head>
+<body>
+
+{% include "./khachhang/navbar.html" %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-4">
+      {% include "./khachhang/thongtincanhan_sidebar.html" %}
+    </div>
+
+    <div class="col-6">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Họ và Tên</th>
+                <th scope="col">Ngày Sinh</th>
+                <th scope="col">Địa Chỉ</th>
+                <th scope="col">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr>
+                <td>1</td>
+                <td id="name">Nguyễn Tạ Bảo</td>
+                <td id="dob">23/07/2003</td>
+                <td id="address">Quy Nhơn <3</td>
+                <td>
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
+                    Chỉnh sửa
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin cá nhân</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          <div class="mb-3">
+            <label for="editName" class="form-label">Họ và Tên</label>
+            <input type="text" class="form-control" id="editName" value="Nguyễn Tạ Bảo">
+          </div>
+          <div class="mb-3">
+            <label for="editDOB" class="form-label">Ngày Sinh</label>
+            <input type="text" class="form-control" id="editDOB" value="23/07/2003">
+          </div>
+          <div class="mb-3">
+            <label for="editAddress" class="form-label">Địa Chỉ</label>
+            <input type="text" class="form-control" id="editAddress" value="Quy Nhơn <3">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="saveChanges()">Lưu thay đổi</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function saveChanges() {
+    // Get values from the form
+    var newName = document.getElementById('editName').value;
+    var newDOB = document.getElementById('editDOB').value;
+    var newAddress = document.getElementById('editAddress').value;
+
+    // Update the table with new values
+    document.getElementById('name').innerText = newName;
+    document.getElementById('dob').innerText = newDOB;
+    document.getElementById('address').innerText = newAddress;
+
+    // Close the modal
+    $('#editModal').modal('hide');
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!-- Your existing modal HTML code -->
+<div class="modal modal-sheet position-static d-block bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog" id="modalSigning21">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h1 class="fw-bold mb-0 fs-2">Thông tin về bạn chưa tồn tại, vui lòng điền đầy đủ thông tin tại đây.</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-5 pt-0">
+        <form id="registrationForm">
+          <div class="form-floating mb-3">
+            <input type="tel" class="form-control rounded-3" id="tele" placeholder="name@example.com">
+            <label for="tele">Số điện thoại</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control rounded-3" id="tex" placeholder="Password">
+            <label for="tex">Họ và Tên</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="date" class="form-control rounded-3" id="date_12" placeholder="name@example.com">
+            <label for="date_12">Ngày Sinh</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control rounded-3" id="tex21" placeholder="name@example.com">
+            <label for="tex21">Địa Chỉ</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-3" id="pas21" placeholder="name@example.com">
+            <label for="pas21">Mật khẩu</label>
+          </div>
+
+          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="validateAndSubmit()">Đăng ký</button>
+          <small class="text-body-secondary">Vui lòng kiểm tra thông tin cẩn thận trước khi nhấn.</small>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Your existing pop-up modal HTML code -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Thông báo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="infoModalBody">
+        <!-- Dynamic content will be inserted here based on validation result -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reloadPage()">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript to add click event listener -->
+<script>
+  function validateAndSubmit() {
+    // Add your validation logic here
+    var isValid = true; // Replace with your validation logic
+
+    if (isValid) {
+      // If valid, show success message in the info modal
+      showInfoModal("Thông tin hợp lệ!");
+    } else {
+      // If not valid, show error message in the info modal
+      showInfoModal("Thông tin không hợp lệ. Vui lòng kiểm tra lại!");
+    }
+  }
+
+  function showInfoModal(message) {
+    // Set the message in the info modal body
+    document.getElementById("infoModalBody").innerText = message;
+
+    // Show the info modal using Bootstrap's modal method
+    var infoModal = new bootstrap.Modal(document.getElementById("infoModal"));
+    infoModal.show();
+  }
+  function reloadPage() {
+    // Reload the current page
+    location.reload();
+  }
+</script>

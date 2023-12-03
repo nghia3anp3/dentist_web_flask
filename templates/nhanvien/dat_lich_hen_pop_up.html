@@ -1,0 +1,84 @@
+<div class="modal modal-sheet position-static d-block bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog" id="modalSigninOption">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h1 class="fw-bold mb-0 fs-2">Số điện thoại không tồn tại, vui lòng đăng ký tại đây</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-5 pt-0">
+        <form class="" id="signupForm">
+          <div class="input-group mb-3">
+            <span class="input-group-text"> Họ và tên </span>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default1" id="Name">
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text"> Ngày sinh </span>
+            <input type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default1" id="Birth">
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text"> Địa chỉ </span>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default1" id="Address">
+          </div>
+
+          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="button" onclick="submitForm()">Đăng ký</button>
+          <small class="text-body-secondary">Vui lòng kiểm tra kỹ thông tin trước khi nhấn đăng ký.</small>
+          <hr class="my-4">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitForm() {
+    // Log input information to the console
+    var name = document.getElementById("Name").value ;
+    var birth = document.getElementById("Birth").value ;
+    var address =  document.getElementById("Address").value ;
+    console.log("Name: " + name );
+    console.log("Birth: " + birth);
+    console.log("Address: " + address);
+
+    // Check if the information is valid (you can add your validation logic here)
+    var isValid = false; // Replace with your validation logic
+
+    if (isValid) {
+      // If valid, show another HTML (replace the following line with your logic)
+      alert("Đăng ký thành công, vui lòng nhấn OK để tiến hành đặt lịch hẹn");
+      
+      hidePopup ();
+      showDropdown () ;
+
+      
+    } else {
+      // If not valid, you can show an error message or take appropriate action
+      alert("Thông tin không hợp lệ, vui lòng nhập lại.");
+
+      showPopup();
+      hideDropdown();
+    }
+
+
+    function showPopup() {
+      // You can modify this function to display the popup as needed
+      document.getElementById("popupForm").style.display = "block";
+    }
+    function hidePopup() {
+      // You can modify this function to display the popup as needed
+      document.getElementById("popupForm").style.display = "none";
+    }
+    function showDropdown() {
+      // You can modify this function to display the popup as needed
+      document.getElementById("dropdown").style.display = "block";
+    }
+    function hideDropdown() {
+      // You can modify this function to display the popup as needed
+      document.getElementById("dropdown").style.display = "none";
+    }
+
+    
+  }
+</script>
