@@ -32,15 +32,12 @@ def login():
     cursor.execute("{CALL CheckAccountExists(?, ?)}", (sdt, password))
     rows = cursor.fetchall()
     cursor.close()
-    conn.close()
-
+    print(rows[0][0])
     if rows[0][0]=='Admin':
-        session['sdt'] = sdt
-        print("after:" ,session)
+        # print("after:" ,session)
         return jsonify({'redirect': '/admin'})
     elif rows[0][0] == 'BacSi':
-        session['sdt'] = sdt
-        print("after:" ,session)
+        # print("after:" ,session)
         return jsonify({'redirect': '/dentist'})        
     return jsonify({'message': 'Tên người dùng hoặc mật khẩu không đúng'})
 
@@ -50,23 +47,22 @@ def alert():
 
 @app.route('/admin')
 def admin():
-    if 'sdt' in session:
-        return render_template("admin.html")
-    else:
-        return redirect(url_for('alert'))
+    # if 'sdt' in session:
+    return render_template("admin.html")
+    # else:
+    #     return redirect(url_for('alert'))
     
 @app.route('/dentist')
 def dentist():
-    if 'sdt' in session:
-        return render_template("dentist.html")
-    else:
-        return redirect(url_for('alert'))
+    # if 'sdt' in session:
+    return render_template("dentist.html")
+    # else:
+    #     return redirect(url_for('alert'))
     
 @app.route('/logout', methods = ['GET'])
 def logout():
-    session['sdt'] = False
-    session.clear()
-    conn.close()
+    # session['sdt'] = False
+    # session.clear()
     return redirect(url_for('home'))
 
 @app.route('/signup')

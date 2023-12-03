@@ -174,51 +174,53 @@
                 </div>
             </div>
 
-            <div class="column functional" id="create-form" style="margin-left: 20px; display: none;">
-                <div class="block">
-                    <h1 class="function-font">Thông tin tài khoản:</h1>
-                </div>
-                <div class="field block">
-                    <h1> Số điện thoại:</h1>
-                      <input class="input" type="phone" placeholder="Phone">
-                </div>  
-
-                <div class="field block">
-                    <h1> Mật khẩu:</h1>
-                      <input class="input" type="password" placeholder="Mật khẩu">
-                </div> 
-                <!--  -->
-                <div class="columns">
-                    <div class="column is-2">
-                        <h1 class="function-font">Chức năng: </h1>
-                    </div>
-                    <div class="column">
-                        <div class="select is-primary">
-                            <select>
-                              <option>Chọn chức năng</option>
-                              <option>Bác Sĩ</option>
-                              <option>Nhân viên</option>
-                            </select>
-                          </div>
-                    </div>
-                </div>
-                <!--  -->
-                <div class="column">
-                    <div class="block">
-                        <h1 class="function-font">Thông tin cá nhân:</h1>
-                    </div>
-                    <div class="field block">
-                        <h1> Họ và tên:</h1>
-                          <input class="input" type="name" placeholder="Họ và tên">
-                    </div>
-                </div>
-                <div class="columns is-centered">
-                    <div class="column is-6">
-                      <div class="buttons is-centered">
-                        <button class="button" id="create-button">Đăng ký</button>
+            <div class="column functional" id="create-form" style="display: none;margin-top: 20px;">
+                <form action="/submit_form" class="box" method="POST" id="createForm" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="field">
+                      <h1>Số điện thoại</h1>
+                      <div class="control has-icons-left">
+                        <input type="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
+                        <span class="icon is-small is-left">
+                          <i class="fa fa-envelope"></i>
+                        </span>
                       </div>
                     </div>
-                </div>
+                    
+                    <div class="field">
+                      <h1>Mật khẩu</h1>
+                      <div class="control has-icons-left">
+                        <input type="password" placeholder="*******" class="input" name="password" required>
+                        <span class="icon is-small is-left">
+                          <i class="fa fa-lock"></i>
+                        </span>
+                      </div>
+                    </div>
+      
+                    <div class="field">
+                      <h1>Họ và tên</h1>
+                      <div class="control has-icons-left">
+                        <input type="text" placeholder="Lê A" class="input" name="full_name" required>
+                        <span class="icon is-small is-left">
+                          <i class="fa-solid fa-signature"></i>
+                        </span>
+                      </div>
+                    </div>
+      
+                    <div class="field">
+                      <h1>Chọn chức năng</h1>
+                      <div class="select is-primary">
+                        <select style="margin: 10px">
+                          <option>Bác sĩ</option>
+                          <option>Nhân viên</option>
+                        </select>
+                      </div>
+                    </div>
+                  </form>
+                  <div class="field">
+                    <button class="button is-success" id="signupButton">
+                      Đăng ký
+                    </button>
+                  </div>
             </div>  
 
             <div class="column functional" id="lock-form" style="margin-left: 20px;display: none;">
