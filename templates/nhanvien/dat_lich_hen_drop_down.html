@@ -1,6 +1,4 @@
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
 <!-- Add Bootstrap JS and jQuery -->
 <div class="modal modal-sheet position-static d-block bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
   <div class="modal-dialog" role="document">
@@ -30,11 +28,8 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="doctor-dropdown">
                     Chọn bác sĩ khám
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="doctor-dropdown">
-                    <li><a class="dropdown-item" href="#" data-value="Lê Nguyễn Trọng Nghĩa">Lê Nguyễn Trọng Nghĩa</a></li>
-                    <li><a class="dropdown-item" href="#" data-value="Phan Nguyên Phương">Phan Nguyên Phương</a></li>
-                    <li><a class="dropdown-item" href="#" data-value="Võ Thu Trang">Võ Thu Trang</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="Vũ Minh Thư">Vũ Minh Thư</a></li>
+                <ul class="dropdown-menu" aria-labelledby="doctor-dropdown" id="doctor-dropdown-menu">
+                    
                 </ul>
             </div>
           </div>
@@ -62,27 +57,46 @@
             e.preventDefault(); // Prevents the form from submitting normally
 
             // Get the input values
+            var sdt =  $('#userInput').val();
             var selectedTime = $('#inputGroup-sizing-default1').val();
             var selectedDate = $('#inputGroup-sizing-default2').val();
             var selectedDoctor = $('#doctor-dropdown').text();
 
             // Log the values to the console
+            console.log('Selected Time:', sdt);
             console.log('Selected Time:', selectedTime);
             console.log('Selected Date:', selectedDate);
             console.log('Selected Doctor:', selectedDoctor);
+            
 
-            // Set the modal content
-            var modalBodyContent = `
-                <p>Thời gian khám: ${selectedTime}</p>
-                <p>Ngày khám: ${selectedDate}</p>
-                <p>Bác sĩ: ${selectedDoctor}</p>
-            `;
+            $.ajax({
+              type: "GET",
+              url: "/register_have_info",
+              data: { sdt : sdt,
+                giokham: selectedTime,
+                ngaykham: selectedDate,
+                bacsi:  selectedDoctor},
+              success: function (data) {
+                  // Update the dropdown with the available doctors
+                  // Set the modal content
+                    var modalBodyContent = `
+                    <p>Thời gian khám: ${selectedTime}</p>
+                    <p>Ngày khám: ${selectedDate}</p>
+                    <p>Bác sĩ: ${selectedDoctor}</p>`;
 
-            // Set the modal content
-            $('#bookingModal .modal-body').html(modalBodyContent);
+                // Set the modal content
+                $('#bookingModal .modal-body').html(modalBodyContent);
 
-            // Show the modal
-            $('#bookingModal').modal('show');
+                // Show the modal
+                $('#bookingModal').modal('show');
+              },
+              error: function (error) {
+                  console.error("Error:", error);
+              }
+          });
+
+
+            
         });
 
         // Add click event to close button in the modal
@@ -91,6 +105,39 @@
             $('#bookingModal').modal('hide');
           location.reload();
         });
+
+
+        $('#inputGroup-sizing-default1, #inputGroup-sizing-default2').on('change', function () {
+          // Get the selected time and date
+          var selectedTime = $('#inputGroup-sizing-default1').val();
+          var selectedDate = $('#inputGroup-sizing-default2').val();
+
+          // Make an Ajax request to get available doctors
+          $.ajax({
+              type: "GET",
+              url: "/get_available_doctors",
+              data: { selected_time: selectedTime, selected_date: selectedDate },
+              success: function (data) {
+                  // Update the dropdown with the available doctors
+                  updateDoctorDropdown(data.available_doctors);
+              },
+              error: function (error) {
+                  console.error("Error:", error);
+              }
+          });
+      });
+
+      // Function to update the dropdown with available doctors
+      function updateDoctorDropdown(availableDoctors) {
+          // Clear existing options
+          $('#doctor-dropdown-menu').empty();
+
+          // Add new options based on available doctors
+          for (var i = 0; i < availableDoctors.length; i++) {
+              var doctorName = availableDoctors[i];
+              $('#doctor-dropdown-menu').append(`<li><a class="dropdown-item" href="#" data-value="${doctorName}">${doctorName}</a></li>`);
+          }
+      }
     });
 </script>
 
