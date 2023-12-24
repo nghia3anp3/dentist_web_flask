@@ -1,8 +1,8 @@
 ﻿USE HQT_CSDL
 GO
 
---KIEM TRA MOT SO DIEN THOAI CO TON TAI TRONG NGUOI DUNG HAY CHUA
-CREATE PROCEDURE sp_KiemTraSdtTonTai
+-- KIEM TRA MOT SO DIEN THOAI CO TON TAI TRONG NGUOI DUNG HAY CHUA
+CREATE OR ALTER PROCEDURE sp_KiemTraSdtTonTai
 				@SDT VARCHAR(20)
 AS
 BEGIN
@@ -16,14 +16,13 @@ BEGIN
 END;
 GO
 
-DECLARE @TEST BIT
-EXEC @TEST = sp_KiemTraSdtTonTai '110'
-PRINT @TEST
-GO
-
+-- DECLARE @TEST BIT
+-- EXEC @TEST = sp_KiemTraSdtTonTai '630'
+-- PRINT @TEST
+-- GO
 
 -- KIEM TRA TAI KHOAN DA TON TAI HAY CHUA
-CREATE PROCEDURE sp_KiemTraTKTonTai
+CREATE OR ALTER PROCEDURE sp_KiemTraTKTonTai
 				@SDT varchar(20),
 				@LoaiND varchar(10)
 AS
@@ -36,40 +35,47 @@ BEGIN
 END;
 GO
 
-DECLARE @TEST BIT
-EXEC @TEST = sp_KiemTraTKTonTai '123', 'Admin'
-PRINT @TEST
+-- DECLARE @TEST BIT
+-- EXEC @TEST = sp_KiemTraTKTonTai '123', 'Admin'
+-- PRINT @TEST
+-- GO
+
+-- LAY BANG THUOC DANG LUU HANH
+CREATE FUNCTION tb_ThuocHienHanh ()
+RETURNS TABLE 
+AS
+	RETURN(SELECT MaThuoc, TenThuoc, DonGia, ChiDinh, SoLuongTon, NgayHetHan FROM THUOC WHERE TrangThai = 1);
 GO
 
+-- SELECT * FROM tb_ThuocHienHanh()
+-- GO
 
+-- LAY THONG TIN CUA TOAN BO KHO THUOC
+CREATE OR ALTER PROCEDURE sp_LayThongTinKhoThuoc
+AS
+	SELECT * FROM tb_ThuocHienHanh()
+GO
 
+-- EXEC sp_LayThongTinKhoThuoc
+-- GO
 
 --LAY THONG TIN NGUOI DUNG TU MOT SO DIEN THOAI
-CREATE PROCEDURE sp_LayThongTinTuSDT 
+CREATE OR ALTER PROCEDURE sp_LayThongTinTuSDT 
 				@SDT VARCHAR(20)
 AS
-BEGIN
 	DECLARE @Exist BIT
 	EXEC @Exist = sp_KiemTraSdtTonTai @SDT
 	IF @Exist = 1
-	BEGIN 
-		SELECT HoTen,NgaySinh,DiaChi FROM NGUOIDUNG WHERE SDT = @SDT
-	END
-
+		SELECT HoTen, NgaySinh, DiaChi FROM NGUOIDUNG WHERE SDT = @SDT
 	ELSE
-	BEGIN
 		SELECT 0 AS Result
-	END
-END;
 GO
 
-EXEC sp_LayThongTinTuSDT '000';
-GO
-
-
+-- EXEC sp_LayThongTinTuSDT '000'
+-- GO
 
 --LAY THONG TIN HOA DON TU MOT SO DIEN THOAI
-CREATE PROCEDURE sp_LayHoaDonTuSDT
+CREATE OR ALTER PROCEDURE sp_LayHoaDonTuSDT
 				@SDT VARCHAR(20)
 AS
 BEGIN 
@@ -97,109 +103,29 @@ BEGIN
 		SELECT 0 AS Result
 	END
 END;
-Go
-
-EXEC sp_LayHoaDonTuSDT '123'
 GO
 
+-- EXEC sp_LayHoaDonTuSDT '123'
+-- GO
 
-
---TIM BAC SI RANH TRONG THOI GIAN VA NGAY
-CREATE PROCEDURE sp_TimNhaSiRanh
-				@Time varchar(15),
-				@Date varchar(15)
-AS
-BEGIN
-	DECLARE @ThoiGianHen DATETIME = CONVERT(DATETIME, @Date + ' ' + LEFT(@Time,2) + ':00')
-
-	SELECT DISTINCT(NS.SDT), NS.HoTen
-	FROM NGUOIDUNG NS JOIN LICHHEN LH ON NS.SDT = LH.MaNhaSi
-	WHERE NOT EXISTS(SELECT 1 
-					 FROM LICHHEN LH2 
-					 WHERE LH2.ThoiGianHen = @ThoiGianHen AND LH2.MaNhaSi = NS.SDT)
-		  AND 
-		  NOT EXISTS(SELECT 1 
-					 FROM LICHBAN LB 
-					 WHERE LB.NgayGioBatDau < @ThoiGianHen AND LB.NgayGioKetThuc > @ThoiGianHen AND LB.MaNhaSi = NS.SDT)
-END;
-go 
-
-EXEC sp_TimNhaSiRanh '12:30', '2023-12-02'
-GO
-
-
-
---LAY THONG TIN CUA TOAN BO KHO THUOC
-CREATE PROCEDURE sp_LayThongTinKhoThuoc
-AS
-BEGIN
-	SELECT *
-	FROM THUOC
-END;
-GO
-
-EXEC sp_LayThongTinKhoThuoc
-GO
-
-
-
-
---TIM THUOC TU MOT DOAN CUA TEN THUOC
-CREATE PROCEDURE sp_TimThuocBangTen
+--TIM THUOC (DANG LUU HANH) TU MOT DOAN CUA TEN THUOC
+CREATE OR ALTER PROCEDURE sp_TimThuocBangTen
 				@TenThuoc VARCHAR(20)
 AS 
 BEGIN
 
 	DECLARE @SubName VARCHAR(23) = '%' + @TenThuoc + '%'
 	SELECT *
-	FROM THUOC
-	WHERE THUOC.TenThuoc LIKE @SubName
+	FROM tb_ThuocHienHanh()
+	WHERE TenThuoc LIKE @SubName
 END;
 GO
 
-EXEC sp_TimThuocBangTen 'AM'
-GO
-
-
-
--- DAT LICH KHAM (CO KIEM TRA NGUOI DUNG TON TAI HAY CHUA)
-CREATE PROCEDURE sp_DatLichKham
-				@SDT VARCHAR(20),	
-				@HoTen nvarchar(30),
-				@NgaySinh varchar(15),
-				@DiaChi nvarchar(50),
-				@NgayHen varchar(15),
-				@GioHen varchar(15),
-				@MaBacSi VARCHAR(20)
-				
-AS 
-BEGIN 
-	DECLARE @NgayGioHen DATETIME = CONVERT(DATETIME, @NgayHen + ' ' + LEFT(@GioHen,2) + ':00')
-	DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
-	DECLARE @IsSdtExist BIT = CASE 
-								  WHEN EXISTS(SELECT 1 FROM NGUOIDUNG WHERE SDT = @SDT) THEN 1
-								  ELSE 0
-						      END
-	DECLARE @NgaySinhDateTime DATE = CONVERT(DATE, @NgaySinh)
-	IF @IsSdtExist = 1
-	BEGIN
-		INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioHen, @SDT, @MaBacSi, 0)
-	END
-
-	ELSE
-	BEGIN
-		INSERT INTO NGUOIDUNG VALUES (@SDT,@HoTen,@NgaySinhDateTime,@DiaChi)
-		INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioHen, @SDT, @MaBacSi, 0)
-	END
-	
-END;
-GO
-
-EXEC sp_DatLichKham '000', N'Nguyễn Văn M','2003-11-11', N'Gia Lâm, Hà Nội', '2020-01-10', '15:00', '397'
-GO
+-- EXEC sp_TimThuocBangTen 'AM'
+-- GO
 
 -- THEM NGUOI DUNG (CO KIEM TRA NGUOI DUNG CO TON TAI HAY CHUA)
-CREATE PROCEDURE sp_ThemNguoiDung
+CREATE OR ALTER PROCEDURE sp_ThemNguoiDung
 				@SDT VARCHAR(20),	
 				@HoTen nvarchar(30),
 				@NgaySinh varchar(15),
@@ -221,15 +147,13 @@ BEGIN
 END;
 GO
 
-DECLARE @SUS INT
-EXEC @SUS = sp_ThemNguoiDung '555', N'Nguyễn Văn S','2003-11-11', N'Gia Lâm, Hà Nội'
-PRINT @SUS
-GO
-
-
+-- DECLARE @SUS INT
+-- EXEC @SUS = sp_ThemNguoiDung '555', N'Nguyễn Văn S','2003-11-11', N'Gia Lâm, Hà Nội'
+-- PRINT @SUS
+-- GO
 
 --DANG KY TAI KHOAN (CO KIEM TRA SDT VA TAI KHOAN TON TAI HAY CHUA)
-CREATE PROCEDURE sp_DangKiTaiKhoan
+CREATE OR ALTER PROCEDURE sp_DangKiTaiKhoan
 				@SDT varchar(10),
 				@HoTen nvarchar(30),
 				@NgaySinh DATE,
@@ -272,13 +196,11 @@ BEGIN
 END;
 GO
 
-EXEC sp_DangKiTaiKhoan '910',N'Trần Văn O','2002-11-11',N'Đống Đa, Hà Nội','o','Khach'
-Go
-
-
+-- EXEC sp_DangKiTaiKhoan '910',N'Trần Văn O','2002-11-11',N'Đống Đa, Hà Nội','o','Khach'
+-- Go
 
 --XEM LICH KHAM CUA KHACH HANG (DUOC SU DUNG O NHANVIEN)
-CREATE PROCEDURE sp_XemLichKham
+CREATE OR ALTER PROCEDURE sp_XemLichKham
 				@SDT VARCHAR(20)
 AS
 BEGIN
@@ -300,10 +222,10 @@ BEGIN
 END;
 GO
 
-EXEC sp_XemLichKham '123'
-GO
+-- EXEC sp_XemLichKham '123'
+-- GO
 
--- =========== Trang =========== --
+---------------------------------------------------------------------------------
 
 -- (KhachHang) XEM HO SO BENH AN --
 CREATE OR ALTER PROCEDURE sp_XemHoSoBenhAn 
@@ -350,12 +272,10 @@ AS
 	END
 GO
 
--- EXEC sp_XemHoSoBenhAn '001'
--- GO
 -- EXEC sp_XemHoSoBenhAn '000'
 -- GO
-EXEC sp_XemHoSoBenhAn '123'
-GO
+-- EXEC sp_XemHoSoBenhAn '123'
+-- GO
 
 -- (KhachHang) CAP NHAT THONG TIN --
 CREATE OR ALTER PROCEDURE sp_CapNhatThongTin 
@@ -368,15 +288,13 @@ AS
         RETURN 1
     END ELSE
     BEGIN
-        RAISERROR('Ho ten va Mat khau phai khac rong', 16, 1)
+        RAISERROR(N'Họ tên và Mật khẩu phải khác rỗng', 16, 1)
 		RETURN 0
     END
 GO
 
--- EXEC sp_CapNhatThongTin '630', '', '2003-06-20', N'Bảo Lộc, Lâm Đồng', 'trang'
+-- EXEC sp_CapNhatThongTin '630', 'Võ Thu Trang', '2003-06-20', N'Bảo Lộc, Lâm Đồng', 'trang'
 -- GO
-EXEC sp_CapNhatThongTin '630', 'Võ Thu Trang', '2003-06-20', N'Bảo Lộc, Lâm Đồng', 'trang'
-GO
 
 -- function: KIEM TRA HAI LICH CO TRUNG NHAU KHONG (0: khong trung, 1: trung) --
 CREATE FUNCTION f_KTLichTrungNhau 
@@ -384,28 +302,26 @@ CREATE FUNCTION f_KTLichTrungNhau
 RETURNS bit 
 AS
 BEGIN
-    IF (@NgayGioKT1 < @NgayGioBD2)
+    IF (@NgayGioKT1 <= @NgayGioBD2)
         RETURN 0
-    IF (@NgayGioKT2 < @NgayGioBD1)
+    IF (@NgayGioKT2 <= @NgayGioBD1)
         RETURN 0
     RETURN 1
 END
 GO
 
-print dbo.f_KTLichTrungNhau('2023-12-02 12:30:00', '2023-12-02 14:30:00', 
-                            '2023-12-01 15:30:00', '2023-12-02 13:30:00')
-GO
+-- PRINT dbo.f_KTLichTrungNhau('2023-12-02 12:30:00', '2023-12-02 14:45:00', 
+--                             '2023-12-02 14:30:00', '2023-12-02 15:30:00')
+-- GO
 
--- function: KIEM TRA LICH BAN CO HOP LE KHONG --
-CREATE FUNCTION f_KTLichHopLe 
+-- function: KIEM TRA LICH BAN CO HOP LE KHONG (chi xet bang LICHHEN) --
+CREATE FUNCTION f_KTLichBanHopLe 
 	(@MaNhaSi varchar(20), @NgayGioBD datetime, @NgayGioKT datetime)
 RETURNS bit 
 AS
 BEGIN
-    IF (@NgayGioBD >= @NgayGioKT)
-    BEGIN
+    IF (@NgayGioBD > @NgayGioKT)
 		RETURN 0
-	END
 
     -- Kiem tra trong LICHHEN cua @MaNhaSi co bi trung khong --
     DECLARE @DS_LICHHEN TABLE(MaLH int, ThoiGianHen datetime)
@@ -439,8 +355,8 @@ BEGIN
 END
 GO
 
-print dbo.f_KTLichHopLe('237', '2023-12-02 10:30', '2023-12-02 13:30')
-GO
+-- PRINT dbo.f_KTLichBanHopLe('397', '2024-04-20 12:00', '2024-04-20 15:00')
+-- GO
 
 -- (NhaSi) CAP NHAT LICH BAN --
 CREATE OR ALTER PROCEDURE sp_CapNhatLichBan
@@ -449,9 +365,9 @@ AS
     DECLARE @NgayGioBD_Moi DATETIME = CONVERT(DATETIME, @NgayBDMoi + ' ' + LEFT(@GioBDMoi,2) + ':00')
     DECLARE @NgayGioKT_Moi DATETIME = CONVERT(DATETIME, @NgayKTMoi + ' ' + LEFT(@GioKTMoi,2) + ':00')
 
-    IF (dbo.f_KTLichHopLe(@MaNhaSi, @NgayGioBD_Moi, @NgayGioKT_Moi) = 0)
+    IF (dbo.f_KTLichBanHopLe(@MaNhaSi, @NgayGioBD_Moi, @NgayGioKT_Moi) = 0)
     BEGIN
-		RAISERROR('Cap nhat khong thanh cong', 16, 1)
+		RAISERROR(N'Lịch không hợp lệ', 16, 1)
 		RETURN 0
 	END
 
@@ -459,8 +375,8 @@ AS
     RETURN 1
 GO
 
-EXEC sp_CapNhatLichBan '237', 5, '2023-12-02', '09:00', '2023-12-02', '10:00'
-GO
+-- EXEC sp_CapNhatLichBan '237', 5, '2023-12-02', '09:00', '2023-12-02', '10:00'
+-- GO
 
 -- (NhaSi) THEM LICH BAN --
 CREATE OR ALTER PROCEDURE sp_ThemLichBan
@@ -469,9 +385,9 @@ AS
     DECLARE @NgayGioBD DATETIME = CONVERT(DATETIME, @NgayBD + ' ' + LEFT(@GioBD,2) + ':00')
     DECLARE @NgayGioKT DATETIME = CONVERT(DATETIME, @NgayKT + ' ' + LEFT(@GioKT,2) + ':00')
 
-    IF (dbo.f_KTLichHopLe(@MaNhaSi, @NgayGioBD, @NgayGioKT) = 0)
+    IF (dbo.f_KTLichBanHopLe(@MaNhaSi, @NgayGioBD, @NgayGioKT) = 0)
     BEGIN
-		RAISERROR('Them khong thanh cong', 16, 1)
+		RAISERROR(N'Lịch không hợp lệ', 16, 1)
 		RETURN 0
 	END
 
@@ -481,10 +397,10 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_ThemLichBan '237', '2023-12-03', '06:00', '2023-12-03', '08:00'
-GO
-EXEC sp_ThemLichBan '237', '2023-12-03', '09:00', '2023-12-03', '10:00'
-GO
+-- EXEC sp_ThemLichBan '237', '2023-12-03', '06:00', '2023-12-03', '08:00'
+-- GO
+-- EXEC sp_ThemLichBan '237', '2023-12-03', '09:00', '2023-12-03', '10:00'
+-- GO
 
 -- (NhanVien) THANH TOAN --
 CREATE OR ALTER PROCEDURE sp_ThanhToan 
@@ -495,7 +411,7 @@ AS
 
 	IF (@isSDTExist = 0)
 	BEGIN 
-		RAISERROR('SDT khong ton tai', 16, 1)
+		RAISERROR(N'SDT không tồn tại', 16, 1)
 		RETURN 0
 	END
 
@@ -510,7 +426,7 @@ AS
 
     IF (@SL_TT = 0)
 	BEGIN
-		print('Khong co ho so can thanh toan')
+		print(N'Không có hồ sơ cần thanh toán')
         RETURN 1
 	END
 
@@ -531,10 +447,10 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_ThanhToan '234'
-GO
-EXEC sp_ThanhToan '123'
-GO
+-- EXEC sp_ThanhToan '234'
+-- GO
+-- EXEC sp_ThanhToan '123'
+-- GO
 
 -- (NhaSi) TAO HO SO BENH AN --
 CREATE OR ALTER PROCEDURE sp_TaoHoSoBenhAn 
@@ -545,7 +461,7 @@ AS
 
 	IF (@isSDTExist = 0)
 	BEGIN 
-		RAISERROR('SDT khong ton tai', 16, 1)
+		RAISERROR(N'SDT không tồn tại', 16, 1)
 		RETURN 0
 	END
 
@@ -554,37 +470,53 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_TaoHoSoBenhAn '234', '397'
-GO
+-- EXEC sp_TaoHoSoBenhAn '234', '397'
+-- GO
 
 -- (NhaSi) TAO DON THUOC --
 CREATE OR ALTER PROCEDURE sp_TaoDonThuoc 
 	@MaHoSo int, @TenThuoc char(30), @SoLuong int
 AS
-	DECLARE @SoLuongTon int 
-	SELECT @SoLuongTon = SoLuongTon FROM THUOC WHERE TenThuoc = @TenThuoc
-
-	IF (@SoLuong > @SoLuongTon)
+	-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
+	IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
 	BEGIN
-		RAISERROR('Vuot qua so luong ton', 16, 1)
+		RAISERROR(N'Không tồn tại thuốc', 16, 1)
         RETURN 0
 	END
 
+	-- Kiem tra so luong ton
+	DECLARE @SoLuongTon int 
+	SELECT @SoLuongTon = SoLuongTon FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
+
+	IF (@SoLuong > @SoLuongTon)
+	BEGIN
+		RAISERROR(N'Vượt quá số lượng tồn', 16, 1)
+        RETURN 0
+	END
+
+	-- Tao don thuoc
 	DECLARE @MaThuoc char(10), @DonGia int
-	SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM THUOC WHERE TenThuoc = @TenThuoc
+	SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
 
 	INSERT INTO DONTHUOC(MaDonThuoc, MaThuoc, SoLuong, DonGia) VALUES (@MaHoSo, @MaThuoc, @SoLuong, @DonGia)
 	UPDATE THUOC SET SoLuongTon = @SoLuongTon - @SoLuong WHERE MaThuoc = @MaThuoc
 	RETURN 1
 GO
 
-EXEC sp_TaoDonThuoc 7, 'Panadol', 6
-GO
+-- EXEC sp_TaoDonThuoc 7, 'Panadol', 6
+-- GO
 
 -- (NhaSi) TAO DON DICH VU --
 CREATE OR ALTER PROCEDURE sp_TaoDonDV 
 	@MaHoSo int, @TenDV nvarchar(50)
 AS
+	-- Kiem tra ten dich vu co ton tai khong
+	IF (@TenDV NOT IN (SELECT TenDV FROM DICHVU))
+	BEGIN
+		RAISERROR(N'Không tồn tại dịch vụ', 16, 1)
+        RETURN 0
+	END
+
 	DECLARE @MaDV char(10), @DonGia int
 	SELECT @MaDV = MaDV, @DonGia = DonGia FROM DICHVU WHERE TenDV = @TenDV
 
@@ -592,8 +524,8 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_TaoDonDV 7, N'Tẩy trắng răng'
-GO
+-- EXEC sp_TaoDonDV 7, N'Tẩy trắng răng'
+-- GO
 
 -- (QTV) KHOA TAI KHOAN --
 CREATE OR ALTER PROCEDURE sp_KhoaTaiKhoan
@@ -605,7 +537,16 @@ AS
 
 	IF (@isTKExist = 0)
 	BEGIN
-		RAISERROR('Tai khoan khong ton tai', 16, 1)
+		RAISERROR(N'Tài khoản không tồn tại', 16, 1)
+        RETURN 0
+	END
+
+	-- Kiem tra tai khoan da bi khoa chua
+	DECLARE @lock BIT 
+	SELECT @lock = TrangThai FROM TAIKHOAN WHERE SDT = @SDT AND LoaiND = @LoaiND
+	IF (@lock = 0)
+	BEGIN
+		RAISERROR(N'Tài khoản đã bị khoá', 16, 1)
         RETURN 0
 	END
 
@@ -614,24 +555,36 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_KhoaTaiKhoan '020', 'NhanVien'
-GO
+-- EXEC sp_KhoaTaiKhoan '020', 'NhanVien'
+-- GO
 
 -- (QTV) THEM THUOC --
 CREATE OR ALTER PROCEDURE sp_ThemThuoc
-	@MaThuoc char(10), @TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
+	@TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
 AS
-	-- Kiem tra thuoc co ton tai khong
-	IF (@MaThuoc IN (SELECT MaThuoc FROM THUOC))
+	-- Tu tang Ma thuoc
+	DECLARE @last char(10)
+	SELECT @last = MAX(MaThuoc) FROM THUOC
+
+	DECLARE @num int = SUBSTRING(@last, 2, 3) + 1 
+
+	DECLARE @fill int = LEN(CAST(@last AS char(10))) - LEN(CAST(@num AS char(10))) - 1
+	IF @fill < 0
+		SET @fill = 0
+
+	DECLARE @MaThuoc char(10) = CONCAT('T', REPLICATE('0', @fill), @num)
+
+	-- Kiem tra ten thuoc da ton tai chua
+	IF (@TenThuoc IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
 	BEGIN
-		RAISERROR('Ma thuoc da ton tai', 16, 1)
+		RAISERROR(N'Trùng tên với thuốc khác trong kho hiện hành', 16, 1)
         RETURN 0
 	END
 
 	-- Kiem tra ngay het han co sau ngay them khong
 	IF (@NgayHetHan <= CAST(GETDATE() AS date))
 	BEGIN
-		RAISERROR('Ngay het han phai sau ngay them', 16, 1)
+		RAISERROR(N'Ngày hết hạn phải sau ngày thêm', 16, 1)
         RETURN 0
 	END
 
@@ -641,43 +594,166 @@ AS
 	RETURN 1
 GO
 
-EXEC sp_ThemThuoc 'T006', 'Alaxan', 7000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
-GO
-EXEC sp_ThemThuoc 'T001', 'Paracetamol', 10000, N'Thuốc giảm đau hạ sốt', 100, '2025-12-30'
-GO
+-- EXEC sp_ThemThuoc 'Alaxan', 7000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
+-- GO
+-- EXEC sp_ThemThuoc 'Paracetamol', 10000, N'Thuốc giảm đau hạ sốt', 100, '2025-12-30'
+-- GO
 
 -- (QTV) SUA THONG TIN THUOC --
 CREATE OR ALTER PROCEDURE sp_SuaThongTinThuoc
 	@MaThuoc char(10), @TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
 AS
-	-- Kiem tra thuoc can sua co ton tai khong
-	IF (@MaThuoc NOT IN (SELECT MaThuoc FROM THUOC))
+	-- Kiem tra thuoc co ton tai de sua khong
+	IF (@MaThuoc NOT IN (SELECT MaThuoc FROM tb_ThuocHienHanh()))
 	BEGIN
-		RAISERROR('Ma thuoc khong ton tai', 16, 1)
+		RAISERROR(N'Mã thuốc không tồn tại trong kho hiện hành', 16, 1)
         RETURN 0
 	END
 
-	-- Kiem tra ten thuoc da ton tai chua
-	IF (@TenThuoc IN (SELECT TenThuoc FROM THUOC))
+	-- Kiem tra ten thuoc (neu thay doi) da ton tai chua
+	DECLARE @TenThuocTruoc char(30) = (SELECT TenThuoc FROM THUOC WHERE MaThuoc = @MaThuoc)
+	IF (@TenThuoc IN (SELECT TenThuoc FROM tb_ThuocHienHanh()) AND @TenThuoc <> @TenThuocTruoc)
 	BEGIN
-		RAISERROR('Ten thuoc da ton tai', 16, 1)
+		RAISERROR(N'Trùng tên với thuốc khác trong kho hiện hành', 16, 1)
         RETURN 0
 	END
 
 	-- Kiem tra ngay het han co sau ngay sua khong
 	IF (@NgayHetHan <= CAST(GETDATE() AS date))
 	BEGIN
-		RAISERROR('Ngay het han phai sau ngay sua', 16, 1)
+		RAISERROR(N'Ngày hết hạn phải sau ngày sửa', 16, 1)
         RETURN 0
 	END
 
-	-- Them
+	-- Cap nhat
 	UPDATE THUOC SET TenThuoc = @TenThuoc, SoLuongTon = @SoLuongTon, DonGia = @DonGia, NgayHetHan = @NgayHetHan, ChiDinh = @ChiDinh
 	WHERE MaThuoc = @MaThuoc
 	RETURN 1
 GO
 
-EXEC sp_SuaThongTinThuoc 'T001', 'Panadol', 6000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
+-- EXEC sp_SuaThongTinThuoc 'T001', 'Paracetamol', 6000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
+-- GO
+-- EXEC sp_SuaThongTinThuoc 'T006', 'Cilzec', 8000, N'Thuốc điều trị cao huyết áp', 100, '2025-12-30'
+-- GO
+
+-- (QTV) XOA THUOC --
+CREATE OR ALTER PROCEDURE sp_XoaThuoc
+	@MaThuoc char(10)
+AS
+	-- Kiem tra thuoc co ton tai de xoa khong
+	IF (@MaThuoc NOT IN (SELECT MaThuoc FROM tb_ThuocHienHanh()))
+	BEGIN
+		RAISERROR(N'Mã thuốc không tồn tại trong kho hiện hành', 16, 1)
+        RETURN 0
+	END
+
+	-- Xoa
+	UPDATE THUOC SET TrangThai = 0 WHERE MaThuoc = @MaThuoc
+	RETURN 1
 GO
-EXEC sp_SuaThongTinThuoc 'T006', 'Cilzec', 8000, N'Thuốc điều trị cao huyết áp', 100, '2025-12-30'
+
+-- EXEC sp_XoaThuoc 'T004'
+-- GO
+
+-- function: KIEM TRA LICH HEN CO HOP LE KHONG (xet bang LICHHEN va LICHBAN) --
+CREATE FUNCTION f_KTLichHenHopLe 
+	(@MaNhaSi varchar(20), @NgayGioBD datetime)
+RETURNS bit 
+AS
+BEGIN
+    DECLARE @NgayGioKT datetime
+	SET @NgayGioKT = DATEADD(hour, 1, @NgayGioBD)
+
+    -- Kiem tra trong LICHHEN cua @MaNhaSi co bi trung khong --
+	IF (dbo.f_KTLichBanHopLe (@MaNhaSi, @NgayGioBD, @NgayGioKT) = 0)
+		RETURN 0
+	
+	-- Kiem tra trong LICHBAN cua @MaNhaSi co bi trung khong --
+    DECLARE @DS_LICHBAN TABLE(MALB int, NgayGioBatDau datetime, NgayGioKetThuc datetime)
+	INSERT INTO @DS_LICHBAN
+		SELECT MALB, NgayGioBatDau, NgayGioKetThuc
+		FROM LICHBAN
+		WHERE MaNhaSi = @MaNhaSi
+    
+    DECLARE @SL_LICHBAN int
+	SELECT @SL_LICHBAN = COUNT(*) FROM @DS_LICHBAN
+
+    IF (@SL_LICHBAN = 0)
+        RETURN 1
+
+    DECLARE @i int, @MALB int, @NgayGioBD_Ban datetime, @NgayGioKT_Ban datetime
+    SET @i = 0
+
+    WHILE (@i < @SL_LICHBAN)
+	BEGIN
+        SELECT TOP 1 @MALB = MALB, @NgayGioBD_Ban = NgayGioBatDau, @NgayGioKT_Ban = NgayGioKetThuc FROM @DS_LICHBAN
+        
+        IF (dbo.f_KTLichTrungNhau(@NgayGioBD, @NgayGioKT, @NgayGioBD_Ban, @NgayGioKT_Ban) = 1)
+            RETURN 0
+
+        SET @i = @i + 1
+		DELETE @DS_LICHBAN WHERE MALB = @MALB
+	END
+
+    RETURN 1
+END
 GO
+
+-- print dbo.f_KTLichHenHopLe('397', '2023-12-02 16:00')
+-- GO
+
+-- DAT LICH KHAM 
+CREATE OR ALTER PROCEDURE sp_DatLichKham
+	@SDT VARCHAR(20), @HoTen nvarchar(30), @NgaySinh varchar(15), @DiaChi nvarchar(50), 
+	@NgayHen varchar(15), @GioHen varchar(15), @MaNhaSi VARCHAR(20)		
+AS  
+	-- Kiem tra dieu kien
+	DECLARE @NgayGioHen DATETIME = CONVERT(DATETIME, @NgayHen + ' ' + LEFT(@GioHen,2) + ':00')
+	IF (dbo.f_KTLichHenHopLe(@MaNhaSi, @NgayGioHen) = 0)
+    BEGIN
+		RAISERROR(N'Lịch không hợp lệ', 16, 1)
+		RETURN 0
+	END
+
+	-- Them lich hen
+	DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
+	INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioHen, @SDT, @MaNhaSi, 0)
+
+	-- Them nguoi dung neu chua co
+	DECLARE @isSDTExist BIT
+	EXEC @isSDTExist = sp_KiemTraSdtTonTai @SDT
+
+	IF (@IsSdtExist = 0)
+	BEGIN
+		DECLARE @NgaySinhDateTime DATE = CONVERT(DATE, @NgaySinh)
+		INSERT INTO NGUOIDUNG VALUES (@SDT,@HoTen,@NgaySinhDateTime,@DiaChi)
+	END
+GO
+
+-- EXEC sp_DatLichKham '000', N'Nguyễn Văn M','2003-11-11', N'Gia Lâm, Hà Nội', '2020-01-10', '15:00', '397'
+-- GO
+
+-- function: TIM BAC SI RANH TRONG THOI GIAN VA NGAY
+CREATE FUNCTION tb_TimNhaSiRanh (@Ngay varchar(15), @Gio varchar(15))
+RETURNS TABLE
+AS
+	RETURN(
+		SELECT DISTINCT(BS.SDT), ND.HoTen
+		FROM TAIKHOAN BS JOIN NGUOIDUNG ND ON BS.SDT = ND.SDT
+		WHERE BS.LoaiND = 'BacSi' 
+		AND (dbo.f_KTLichHenHopLe(BS.SDT, CONVERT(DATETIME, @Ngay + ' ' + LEFT(@Gio, 2) + ':00')) = 1)
+	);
+GO 
+
+-- SELECT * FROM tb_TimNhaSiRanh('2023-12-02', '11:30')
+-- GO
+
+-- TIM BAC SI RANH TRONG THOI GIAN VA NGAY
+CREATE OR ALTER PROCEDURE sp_TimNhaSiRanh
+	@Ngay varchar(15), @Gio varchar(15)
+AS
+	SELECT * FROM tb_TimNhaSiRanh(@Ngay, @Gio)
+GO
+
+-- EXEC sp_TimNhaSiRanh '2023-12-02', '12:30'
+-- GO

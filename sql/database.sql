@@ -1,9 +1,15 @@
-﻿use master
-go
-create database HQT_CSDL
-go
-use HQT_CSDL
-go
+﻿USE master
+GO
+-- drop database
+ALTER DATABASE HQT_CSDL SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+GO
+DROP DATABASE HQT_CSDL
+GO
+
+CREATE DATABASE HQT_CSDL
+GO
+USE HQT_CSDL
+GO
 
 CREATE TABLE NGUOIDUNG
 (
@@ -11,7 +17,7 @@ CREATE TABLE NGUOIDUNG
 	HoTen NVARCHAR(30) NOT NULL,
 	NgaySinh DATE,
 	DiaChi NVARCHAR(50)
-);
+)
 
 CREATE TABLE TAIKHOAN
 (
@@ -44,8 +50,8 @@ CREATE TABLE THUOC
 	DonGia int NOT NULL,
 	ChiDinh nvarchar(100),
 	SoLuongTon int NOT NULL,
-	NgayHetHan date NOT NULL
-
+	NgayHetHan date NOT NULL,
+	TrangThai bit DEFAULT 1,
 	PRIMARY KEY (MaThuoc)
 )
 
@@ -59,7 +65,6 @@ CREATE TABLE DONTHUOC
 	PRIMARY KEY (MaDonThuoc, MaThuoc),
 	FOREIGN KEY (MaThuoc) REFERENCES THUOC(MaThuoc),
 	FOREIGN KEY (MaDonThuoc) REFERENCES HOSOBENHAN(MaHoSo)
-
 )
 
 
@@ -82,10 +87,7 @@ CREATE TABLE DONDICHVU
 
 	FOREIGN KEY (MaDV) REFERENCES DICHVU(MaDV),
 	FOREIGN KEY (MaDonDV) REFERENCES HOSOBENHAN(MaHoSo)
-
 )	
-
-
 
 CREATE TABLE LICHHEN
 (
@@ -110,9 +112,7 @@ CREATE TABLE LICHBAN
 )
 
 
-
-
---INSERT DATA
+-- INSERT DATA
 INSERT INTO NGUOIDUNG(SDT, HoTen, NgaySinh, DiaChi)
 VALUES
     ('397',N'Phan Nguyên Phương','2003-03-02', N'Thăng Bình, Quảng Nam'),
@@ -160,13 +160,13 @@ VALUES
 	(5, '237', '2023-12-04 05:00:00', '2023-12-05 05:00:00');
 
 
-INSERT INTO THUOC(MaThuoc, TenThuoc, SoLuongTon, DonGia, NgayHetHan, ChiDinh)
+INSERT INTO THUOC(MaThuoc, TenThuoc, SoLuongTon, DonGia, NgayHetHan, ChiDinh, TrangThai)
 VALUES
-	('T001', 'Paracetamol', 100, 10000, '2025-12-30', N'Thuốc không dùng cho người da đen'),
-	('T002', 'Panadol', 100, 2000, '2025-12-30', N'Thuốc không dùng cho dân Thanh Hóa'),
-	('T003', 'Celpha', 100, 5000, '2025-12-30', N'Thuốc không dùng cho người tên Trang'),
-	('T004', 'Delta', 100, 8000, '2025-12-30', N'Thuốc không dùng cho người không phát âm được chữ a'),
-	('T005', 'Gamma', 100, 3000, '2025-12-30', N'Thuốc không dùng cho thằng tên Nghĩa');
+	('T001', 'Paracetamol', 100, 10000, '2025-12-30', N'Thuốc giảm đau hạ sốt', 1),
+	('T002', 'Panadol', 100, 2000, '2025-12-30', N'Thuốc giảm đau hạ sốt nhẹ', 0),
+	('T003', 'Celpha', 100, 5000, '2025-12-30', N'Thuốc kháng viêm', 1),
+	('T004', 'Delta', 100, 8000, '2025-12-30', N'Thuốc điều trị nhiễm khuẩn hô hấp', 1),
+	('T005', 'Gamma', 100, 3000, '2025-12-30', N'Thuốc điều trị rối loạn tuần hoàn não', 1);
 
 
 INSERT INTO DICHVU(MaDV, TenDV, DonGia)
@@ -184,7 +184,8 @@ VALUES
 	(2, '234', '397', '2023-12-03 08:00:00', 2010000), 	
 	(3, '456', '397', '2023-12-02 10:00:00', 150000), 
 	(4, '345', '237', '2023-12-02 11:00:00', 3190000), 
-	(5, '567', '237', '2023-12-03 20:00:00', 40015000);
+	(5, '567', '237', '2023-12-03 20:00:00', 0),
+	(6, '123', '237', '2023-12-03 19:00:00', 0);
 
 
 INSERT INTO DONDICHVU(MaDonDV, MaDV, DonGia)
@@ -195,7 +196,9 @@ VALUES
 	(3, 'D003', 100000),
 	(4, 'D004', 3000000),	
 	(4, 'D003', 100000),
-	(5, 'D005', 40000000);
+	(5, 'D005', 40000000),
+	(6, 'D001', 100000),
+	(6, 'D003', 100000);
 
 INSERT INTO DONTHUOC(MaDonThuoc, MaThuoc,SoLuong, DonGia)
 VALUES
@@ -204,5 +207,7 @@ VALUES
 	(2, 'T002', 5, 2000),
 	(3, 'T003', 10, 5000),
 	(4, 'T004', 5, 8000),	
-	(4, 'T003', 10,5000 ),
-	(5, 'T005', 5, 3000);
+	(4, 'T003', 10, 5000 ),
+	(5, 'T005', 5, 3000),
+	(6, 'T003', 10, 5000 ),
+	(6, 'T005', 5, 3000);
