@@ -9,10 +9,10 @@ SET TRAN ISOLATION LEVEL REPEATABLE READ
 BEGIN TRAN
     BEGIN TRY
         DECLARE @NgayGioBD DATETIME = CONVERT(DATETIME, @NgayHen + ' ' + LEFT(@GioHen,2) + ':00')
-        -- Kiem tra: nha si nam trong danh sach nha si ranh
-        IF @MaNhaSi NOT IN (SELECT SDT FROM tb_TimNhaSiRanh(@NgayHen, @GioHen))
-        BEGIN 
-            PRINT N'Nha sĩ đã có lịch hẹn hoặc lịch bận cá nhân'
+        -- Kiem tra: ngay gio hen co bi trung khong (luu y: khong trung voi chinh no)
+        IF (dbo.f_KTLichHenHopLe(@MaNhaSi, @NgayGioBD) = 0)
+        BEGIN
+            PRINT N'Nha sĩ đã có lịch hẹn hoặc lịch cá nhân'
             ROLLBACK TRAN
             RETURN 0
         END
@@ -35,15 +35,6 @@ BEGIN TRAN
 
         -- TEST
 		WAITFOR DELAY '0:0:05'
-
-        -- Kiem tra: ngay gio hen co bi trung khong (luu y: khong trung voi chinh no)
-        DECLARE @NgayGioHen DATETIME = CONVERT(DATETIME, @NgayHen + ' ' + LEFT(@GioHen,2) + ':00')
-        IF (dbo.f_KTLichHenHopLe(@MaNhaSi, @NgayGioHen) = 0)
-        BEGIN
-            PRINT N'Lịch không hợp lệ'
-            ROLLBACK TRAN
-            RETURN 0
-        END
 
         -- Them lich hen
         DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
@@ -99,7 +90,7 @@ BEGIN TRAN
         -- Kiem tra: lich muon cap nhat co hop le khong
         IF (dbo.f_KTLichBanHopLe(@MaNhaSi, @NgayGioBD_Moi, @NgayGioKT_Moi) = 0)
         BEGIN
-            PRINT N'Lịch không hợp lệ'
+            PRINT N'Đã có khách hàng đặt lịch hẹn'
             ROLLBACK TRAN
             RETURN 0
         END

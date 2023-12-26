@@ -108,6 +108,29 @@ GO
 -- EXEC sp_LayHoaDonTuSDT '123'
 -- GO
 
+--TIM BAC SI RANH TRONG THOI GIAN VA NGAY
+CREATE PROCEDURE sp_TimNhaSiRanh
+				@Time varchar(15),
+				@Date varchar(15)
+AS
+BEGIN
+	DECLARE @ThoiGianHen DATETIME = CONVERT(DATETIME, @Date + ' ' + LEFT(@Time,2) + ':00')
+
+	SELECT DISTINCT(NS.SDT), NS.HoTen
+	FROM NGUOIDUNG NS JOIN LICHHEN LH ON NS.SDT = LH.MaNhaSi
+	WHERE NOT EXISTS(SELECT 1 
+					 FROM LICHHEN LH2 
+					 WHERE LH2.ThoiGianHen = @ThoiGianHen AND LH2.MaNhaSi = NS.SDT)
+		  AND 
+		  NOT EXISTS(SELECT 1 
+					 FROM LICHBAN LB 
+					 WHERE LB.NgayGioBatDau < @ThoiGianHen AND LB.NgayGioKetThuc > @ThoiGianHen AND LB.MaNhaSi = NS.SDT)
+END;
+go 
+
+-- EXEC sp_TimNhaSiRanh '12:30', '2023-12-02'
+-- GO
+
 --TIM THUOC (DANG LUU HANH) TU MOT DOAN CUA TEN THUOC
 CREATE OR ALTER PROCEDURE sp_TimThuocBangTen
 				@TenThuoc VARCHAR(20)
@@ -731,29 +754,4 @@ AS
 GO
 
 -- EXEC sp_DatLichKham '000', N'Nguyễn Văn M','2003-11-11', N'Gia Lâm, Hà Nội', '2020-01-10', '15:00', '397'
--- GO
-
--- function: TIM BAC SI RANH TRONG THOI GIAN VA NGAY
-CREATE FUNCTION tb_TimNhaSiRanh (@Ngay varchar(15), @Gio varchar(15))
-RETURNS TABLE
-AS
-	RETURN(
-		SELECT DISTINCT(BS.SDT), ND.HoTen
-		FROM TAIKHOAN BS JOIN NGUOIDUNG ND ON BS.SDT = ND.SDT
-		WHERE BS.LoaiND = 'BacSi' 
-		AND (dbo.f_KTLichHenHopLe(BS.SDT, CONVERT(DATETIME, @Ngay + ' ' + LEFT(@Gio, 2) + ':00')) = 1)
-	);
-GO 
-
--- SELECT * FROM tb_TimNhaSiRanh('2023-12-02', '11:30')
--- GO
-
--- TIM BAC SI RANH TRONG THOI GIAN VA NGAY
-CREATE OR ALTER PROCEDURE sp_TimNhaSiRanh
-	@Ngay varchar(15), @Gio varchar(15)
-AS
-	SELECT * FROM tb_TimNhaSiRanh(@Ngay, @Gio)
-GO
-
--- EXEC sp_TimNhaSiRanh '2023-12-02', '12:30'
 -- GO

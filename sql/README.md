@@ -44,6 +44,11 @@ Bao gồm 2 file:
         - Lưu ý sẽ phát sinh duplicate dữ liệu. 
     - Chức năng: Lấy hoá đơn từ số điện thoại.
 
+- **sp_TimNhaSiRanh**:
+    - Tham số truyền vào: *@Ngay VARCHAR(15), @Gio VARCHAR(15)*.
+    - Kết quả trả về: bảng gồm MaNhaSi và TenNhaSi
+    - Chức năng: Tìm nha sĩ rảnh trong thời gian đầu vào
+
 - **sp_TimThuocBangTen**:
     - Tham số truyền vào: *@TenThuoc VARCHAR(20)*. (Có thể là 1 phần trong tên thuốc).
     - Kết quả trả về:
@@ -209,13 +214,3 @@ Bao gồm 2 file:
         - 1: đặt thành công (thêm lịch mới vào bảng LICHHEN và thông tin NGUOIDUNG nếu chưa có)
         - 0: không thành công (bị trùng với lịch hẹn hoặc lịch bận cá nhân đã có của nha sĩ)
     - Chức năng: Đặt lịch khám
-
-- **tb_TimNhaSiRanh**:
-    - Tham số truyền vào: *@Ngay VARCHAR(15), @Gio VARCHAR(15)*.
-    - Kết quả trả về: TABLE gồm MaNhaSi và TenNhaSi
-    - Chức năng: Tìm nha sĩ rảnh trong thời gian đầu vào
-
-- **sp_TimNhaSiRanh**:
-    - Tham số truyền vào: *@Ngay VARCHAR(15), @Gio VARCHAR(15)*.
-    - Kết quả trả về: bảng gồm MaNhaSi và TenNhaSi
-    - Chức năng: Hình thức procedure của tb_TimNhaSiRanh
