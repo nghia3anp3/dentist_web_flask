@@ -41,8 +41,6 @@
     var userInputValue = document.getElementById("userInput").value;
     clearDropdown();
     sendQueryToDatabase_thuoc(userInputValue) ;
-
-
   }
   function clearDropdown() {
     // Clear the content of the dropdown element
@@ -80,7 +78,6 @@
         if (typeof data == 'object' && data["thongtinthuoc"].length > 0) {
           // Data exists, update the form with the received data
             console.log("hoa don", data["thongtinthuoc"][0]);
-            
             for (var i = 0; i < data["thongtinthuoc"].length; i++) {
               createFormForThongTinThuoc(data["thongtinthuoc"][i]);
             }
@@ -96,56 +93,62 @@
         console.error("Error:", error);
       }
     });
-
-function createFormForThongTinThuoc(thongTinThuocData) {
-  // Create a new form container
-  var formContainer = document.getElementById("dropdown");
-
-  // Create a new form element
-  var form = document.createElement("div");
-  form.classList.add("modal-dialog", "role-document");
-  formContainer.appendChild(form);
-
-  // Create a new modal content
-  var modalContent = document.createElement("div");
-  modalContent.classList.add("modal-content", "rounded-4", "shadow");
-  form.appendChild(modalContent);
-
-  // Create a new table element
-  var table = document.createElement("table");
-  table.classList.add("table");
-  modalContent.appendChild(table);
-
-  // Create the table header
-  var thead = document.createElement("thead");
-  var headerRow = document.createElement("tr");
-  var headers = ["Mã thuốc", "Tên Thuốc", "Đơn giá", "Chỉ Định", "Số Lượng Tồn", "Ngày hết hạn"];
-  headers.forEach(function (headerText) {
-    var th = document.createElement("th");
-    th.scope = "col";
-    th.innerText = headerText;
-    headerRow.appendChild(th);
-  });
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  // Create the table body
-  var tbody = document.createElement("tbody");
-  var dataRow = document.createElement("tr");
-
-  // Populate the form with data
-  for (var key in thongTinThuocData) {
-    console.log ("key" , key);
-    var td = document.createElement("td");
-    td.innerText = thongTinThuocData[key];
-    dataRow.appendChild(td);
   }
 
-  tbody.appendChild(dataRow);
-  table.appendChild(tbody);
-}
-
+  function createFormForThongTinThuoc(thuocData) {
+    // Create the modal dialog element
+    var modalDialog = document.createElement("div");
+    modalDialog.className = "modal-dialog";
+    modalDialog.setAttribute("role", "document");
+  
+    // Create the modal content element
+    var modalContent = document.createElement("div");
+    modalContent.className = "modal-content rounded-4 shadow";
+  
+    // Create the table element
+    var table = document.createElement("table");
+    table.className = "table";
+  
+    // Create the table header
+    var thead = document.createElement("thead");
+    var headerRow = document.createElement("tr");
+    var headers = ["Mã thuốc", "Tên Thuốc", "Đơn giá", "Chỉ Định", "Số Lượng Tồn", "Ngày hết hạn"];
+  
+    headers.forEach(function (headerText) {
+      var th = document.createElement("th");
+      th.textContent = headerText;
+      headerRow.appendChild(th);
+    });
+  
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+  
+    // Create the table body
+    var tbody = document.createElement("tbody");
+    var dataRow = document.createElement("tr");
+  
+    // Populate the table with thuocData
+    Object.keys(thuocData).forEach(function (key) {
+      var td = document.createElement("td");
+      td.textContent = thuocData[key];
+      dataRow.appendChild(td);
+    });
+  
+    tbody.appendChild(dataRow);
+    table.appendChild(tbody);
+  
+    // Append the table to the modal content
+    modalContent.appendChild(table);
+  
+    // Append the modal content to the modal dialog
+    modalDialog.appendChild(modalContent);
+  
+    // Append the modal dialog to the dropdown element
+    var dropdown = document.getElementById("dropdown");
+    dropdown.appendChild(modalDialog);
   }
+  
+  
 </script>
 </body>
 </html>

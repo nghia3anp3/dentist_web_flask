@@ -2,7 +2,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content rounded-4 shadow">
       <div class="modal-header p-5 pb-4 border-bottom-0">
-        <h1 class="fw-bold mb-0 fs-2">Số điện thoại chưa đăng ký , vui lòng đăng ký tại đây</h1>
+        <h1 class="fw-bold mb-0 fs-2">Số điện thoại chưa có thông tin chi tiết , vui lòng thêm thông tin tại đây</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -35,7 +35,6 @@
 <script>
   function submitForm() {
     // Log input information to the console
-    
     var sdt = document.getElementById("userInput").value ;
     var name = document.getElementById("Name").value ;
     var birth = document.getElementById("Birth").value ;
@@ -44,12 +43,22 @@
     console.log("Name: " + name );
     console.log("Birth: " + birth);
     console.log("Address: " + address);
-
     // Check if the information is valid (you can add your validation logic here)
     // Send the form data to the server using AJAX
+    sendQueryToDatabase_hskhambenh (sdt , name , birth, address);
+  }
+  function showSuccessPopup() {
+    // You can customize this function to display a success popup
+    alert("Đăng ký thành công, nhấn OK để tiếp tục");
+  }
+  function showFailurePopup() {
+    // You can customize this function to display a failure popup
+    alert("Đăng ký thất bại, nhấn OK để đăng ký lại.");
+  }
+  function sendQueryToDatabase_hskhambenh(sdt , name , birth, address) {
     $.ajax({
-      type: "POST",
-      url: "/register_no_info",  // Update this with the actual route in your Flask app
+      type: "GET" ,
+      url: "/register_no_info",  
       data: {
         sdt : sdt,
         name: name,
@@ -59,9 +68,13 @@
       success: function (response) {
         // Handle the response from the server (e.g., show a success message)
         console.log("Server response:", response);
-        if (response) {
-          hidePopup() ;
+        if (response == 0)
+        {
+          showFailurePopup ();
+        }
+        else if (response == 1) {
           showSuccessPopup ();
+          hidePopup() ;
           showDropdown ();
         }
       },
@@ -70,35 +83,7 @@
         console.error("Error:", error);
       }
     });
-
-
-    function showPopup() {
-      // You can modify this function to display the popup as needed
-      document.getElementById("popupForm").style.display = "block";
-    }
-    function hidePopup() {
-      // You can modify this function to display the popup as needed
-      document.getElementById("popupForm").style.display = "none";
-    }
-    function showDropdown() {
-      // You can modify this function to display the popup as needed
-      document.getElementById("dropdown").style.display = "block";
-    }
-    function hideDropdown() {
-      // You can modify this function to display the popup as needed
-      document.getElementById("dropdown").style.display = "none";
-    }
-
-    function showSuccessPopup() {
-      // You can customize this function to display a success popup
-      alert("Đăng ký thành công, nhấn OK để tiếp tục");
-    }
-  
-    function showFailurePopup() {
-      // You can customize this function to display a failure popup
-      alert("Đăng ký thất bại, nhấn OK để đăng ký lại.");
-    }
-
-    
   }
+
+
 </script>

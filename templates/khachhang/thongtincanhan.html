@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <title>Dentist Register</title>
 </head>
 <body>
-
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
 {% include "./khachhang/navbar.html" %}
 
 <div class="container">
@@ -19,7 +19,10 @@
     </div>
 
     <div class="col-6">
-      <div class="modal-dialog" role="document">
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-primary" type="button" onclick="checkAndShowPopup()"> Xem Thông Tin Của Tôi </button>
+      </div>
+      <div class="modal-dialog" id = "thongtin" role="document" style ="display:none;">
         <div class="modal-content rounded-4 shadow">
           <table class="table">
             <thead>
@@ -47,6 +50,9 @@
           </table>
         </div>
       </div>
+
+      
+
     </div>
   </div>
 </div>
@@ -63,15 +69,15 @@
         <form id="editForm">
           <div class="mb-3">
             <label for="editName" class="form-label">Họ và Tên</label>
-            <input type="text" class="form-control" id="editName" value="Nguyễn Tạ Bảo">
+            <input type="text" class="form-control" id="editName" value="Nhập tên mới của bạn tại đây">
           </div>
           <div class="mb-3">
             <label for="editDOB" class="form-label">Ngày Sinh</label>
-            <input type="text" class="form-control" id="editDOB" value="23/07/2003">
+            <input type="text" class="form-control" id="editDOB" value="Vui lòng nhập định dạng ngày YYYY-MM-DD">
           </div>
           <div class="mb-3">
             <label for="editAddress" class="form-label">Địa Chỉ</label>
-            <input type="text" class="form-control" id="editAddress" value="Quy Nhơn <3">
+            <input type="text" class="form-control" id="editAddress" value="Nhập nơi sinh mới của bạn tại đây">
           </div>
           <button type="button" class="btn btn-primary" onclick="saveChanges()">Lưu thay đổi</button>
         </form>
@@ -81,12 +87,53 @@
 </div>
 
 <script>
+  function checkAndShowPopup() {
+    sendQueryToDatabase_hskhambenh() ; 
+  }
+  function sendQueryToDatabase_hskhambenh() {
+    $.ajax({
+      type: "GET",
+      url: "/query_thong_tin", // Update this with the actual route in your Flask app
+      data: { },
+      success: function (data) {
+        // Handle the data received from the server (e.g., update the table)
+        console.log("Data from server:", data);
+        if (data == 0)
+        {
+          alert ("Thông tin cá nhân của bạn không tồn tại")
+        }
+        else {
+            name = data['name']  ;
+            birth = data['birth'] ;
+            place = data['place'];
+            editthongtin (name, birth, place) ;
+        }
+      },
+      error: function (error) {
+        console.error("Error:", error);
+      }
+    });
+  }
+  function editthongtin() {
+    // Get values from the form
+
+
+    // Update the table with new values
+    document.getElementById('name').innerText = name;
+    document.getElementById('dob').innerText = birth;
+    document.getElementById('address').innerText = place;
+
+    // Close the modal
+    document.getElementById("thongtin").style.display = "block";
+  }
+
   function saveChanges() {
     // Get values from the form
     var newName = document.getElementById('editName').value;
     var newDOB = document.getElementById('editDOB').value;
     var newAddress = document.getElementById('editAddress').value;
-
+    
+    editinformation (newName , newDOB , newAddress);
     // Update the table with new values
     document.getElementById('name').innerText = newName;
     document.getElementById('dob').innerText = newDOB;
@@ -94,6 +141,30 @@
 
     // Close the modal
     $('#editModal').modal('hide');
+  }
+
+  function editinformation(newName , newDOB , newAddress) {
+    $.ajax({
+      type: "GET",
+      url: "/editinformation", // Update this with the actual route in your Flask app
+      data: { "name" :  newName , "dob" :newDOB, "address" : newAddress },
+      success: function (data) {
+        // Handle the data received from the server (e.g., update the table)
+        console.log("Data from server:", data);
+        if (data == 0)
+        {
+          alert ("Chỉnh sửa thông tin thất bại")
+        }
+        else {
+          alert ("Chỉnh sửa thông tin thành công")
+        }
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        showPopup();
+        hideDropdown();
+      }
+    });
   }
 </script>
 

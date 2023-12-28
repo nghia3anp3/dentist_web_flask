@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
   <title>Dentist Register</title>
   <!-- Remove the extra closing tag for the style element -->
 </head>
@@ -23,29 +22,28 @@
             <button type="button" class="btn btn-secondary" onclick="checkAndShowPopup()">Xác nhận</button>
           </div>
         </form>
-
-        
       <div id="popupForm" style="display:none;">
         {%include "./nhanvien/xuat_hoa_don_ko_hd.html"%}
       </div> 
 
       <div id="dropdown" style ="display:none;">
-        <p class = "fs-5 fw-bold mb-3">Các hóa đơn của bạn như sau: </p>
-          {%include "./nhanvien/xuat_hoa_don_hd.html"%}
+
       </div> 
 
       </div>
     </div>
   </div>
-
 <script>
   function checkAndShowPopup() {
     var userInputValue = document.getElementById("userInput").value;
-    sendQueryToDatabase(userInputValue)
-
-     
+    clearDropdown();
+    sendQueryToDatabase(userInputValue);     
   }
-
+  function clearDropdown() {
+    // Clear the content of the dropdown element
+    var dropdown = document.getElementById("dropdown");
+    dropdown.innerHTML = "";
+  }
   function showPopup() {
     // You can modify this function to display the popup as needed
     document.getElementById("popupForm").style.display = "block";
@@ -62,7 +60,6 @@
     // You can modify this function to display the popup as needed
     document.getElementById("dropdown").style.display = "none";
   }
-  
   function sendQueryToDatabase(userInputValue) {
     $.ajax({
       type: "GET",
@@ -70,17 +67,14 @@
       data: { userInput: userInputValue },
       success: function (data) {
         // Handle the data received from the server (e.g., update the table)
-        console.log("Data from server:", data["hoadon"]);
+        console.log("Data from server:", data["thuoc"]);
         console.log("Data from server123:", typeof data);
         hidePopup ();
-        if (typeof data == 'object' && data["hoadon"].length > 0) {
+        if (typeof data["thuoc"] == 'object' && data["thuoc"].length > 0) {
           // Data exists, update the form with the received data
-
-            console.log("hoa don", data["hoadon"][0]);
-            updateFormWithData (data["hoadon"][0])
-            showDropdown();
-          
-          
+          console.log("thuoc", data["thongtin"] , data["thuoc"] , data["dichvu"]);
+          createFormWithData  (data["thongtin"] , data["thuoc"] , data["dichvu"]);
+          showDropdown();
         } else {
           // No data, display the form with the message
           console.log("ssss");
@@ -90,63 +84,147 @@
       },
       error: function (error) {
         console.error("Error:", error);
+        console.log("ssss");
+          showPopup();
+          hideDropdown();
       }
     });
   }
-
-  function updateFormWithData(data) {
-    // Assuming 'hoa_don' is the variable you want to update
-    // Replace this line with the actual data mapping based on your server response
-    hoa_don = data;
   
-    // Update the content of your form using the received data
-    document.getElementById("ma_ho_so").innerText =  "Mã hóa đơn: " + data.mahoadon;
-    // Update other elements similarly...
-    document.getElementById("ma_thuoc").innerText = data.mathuoc;
-    document.getElementById("ten_thuoc").innerText = data.tenthuoc;
-    document.getElementById("so_luong_thuoc").innerText =  data.soluongthuoc;
-    document.getElementById("don_gia_thuoc").innerText =  data.dongia;
-    // Update other elements related to Thuốc similarly...
-
-    // Update elements related to Dịch Vụ
-    document.getElementById("ma_dv").innerText = data.madv;
-    document.getElementById("ten_dv").innerText =  data.tendv;
-    document.getElementById("so_luong_dv").innerText = data.soluongdv;
-    document.getElementById("don_gia_dv").innerText =data.dongiadichvu;
-    // Update other elements related to Dịch Vụ similarly...
-
-    // Update elements related to Nhân Viên
-    document.getElementById("ten_nhan_vien").innerText = "Họ Tên Nhân Viên: " ;
-    document.getElementById("thanh_tien").innerText = "Thành Tiền: " + data.tongtien;
-    // You may need to update the tables as well based on your data structure
-  }
-
-  function createFormForHoadon(hoadonData) {
-    // Create a new form element
-    var form = document.createElement("form");
-    form.classList.add("card", "p-2");
   
-    // Append form to the existing container or create a new container for each form
-    // For example, you can create a new div for each form
-    var formContainer = document.getElementById("dropdown");
-    formContainer.appendChild(form);
+    function createFormWithData(thongtin, thuocData, dvData) {
+      // Create a new modal dialog
+      var modalDialog = document.createElement("div");
+      modalDialog.className = "modal-dialog";
+      modalDialog.role = "document";
+      modalDialog.id = "hoadonform";
   
-    // ... Add the necessary input fields and content to the form based on hoadonData
-    // You can use the updateFormWithData function here or directly manipulate the form elements
+      // Create modal content
+      var modalContent = document.createElement("div");
+      modalContent.className = "modal-content rounded-4 shadow";
   
-    // For example, add the ma_ho_so element to the form
-      var ma_ho_so = document.createElement("p");
-      ma_ho_so.innerText = "Mã hóa đơn: " + hoadonData.mahoadon;
-      form.appendChild(ma_ho_so);
+      // Create list group for basic information
+      var listGroup = document.createElement("ul");
+      listGroup.className = "list-group list-group-flush";
+  
+      // Create list items for basic information
+      var maHoSoItem = document.createElement("li");
+      maHoSoItem.id = "ma_ho_so";
+      maHoSoItem.className = "list-group-item";
+      maHoSoItem.textContent = "Mã Hồ Sơ Bệnh Án: " + thongtin[0].mahoadon;
+      listGroup.appendChild(maHoSoItem);
+  
+      // Create other list items for basic information (ngaykham, id_nhasi, tennhasi)
+      // ...
+
+      var ngaykham = document.createElement("li");
+      ngaykham.id = "ngaykham";
+      ngaykham.className = "list-group-item";
+      ngaykham.textContent = "Ngày khám: " + thongtin[0].ngaykham;
+      listGroup.appendChild(ngaykham);
+
+      var manhasi = document.createElement("li");
+      manhasi.id = "manhasi";
+      manhasi.className = "list-group-item";
+      manhasi.textContent = "Mã nha sĩ: " + thongtin[0].manhasi;
+      listGroup.appendChild(manhasi);
+
+      var tennhasi = document.createElement("li");
+      tennhasi.id = "manhasi";
+      tennhasi.className = "list-group-item";
+      tennhasi.textContent = "Tên nha sĩ: " + thongtin[0].tennhasi;
+      listGroup.appendChild(tennhasi);
+
+      var tongtien = document.createElement("li");
+      tongtien.id = "manhasi";
+      tongtien.className = "list-group-item";
+      tongtien.textContent = "Tổng tiền: " + thongtin[0].tongtien;
+      listGroup.appendChild(tongtien);
+  
+      // Append list group to modal content
+      modalContent.appendChild(listGroup);
+  
+      // Create tables for thuoc and dv
+      var thuocTable = createTable("table_thuoc", ["Mã thuốc", "Tên Thuốc", "Số Lượng", "Đơn giá"], thuocData);
+      var dvTable = createTable("table_dv", ["Mã Dịch Vụ", "Tên Dịch Vụ", "Số Lượng Dịch Vụ", "Đơn giá"], dvData);
+  
+      // Append tables to modal content
+      modalContent.appendChild(thuocTable);
+      modalContent.appendChild(dvTable);
+  
+      // Create another list group for additional information
+      var additionalListGroup = document.createElement("ul");
+      additionalListGroup.className = "list-group list-group-flush my-4";
+  
+      // Create additional list items (ten_nhan_vien, thanh_tien)
+      // ...
+
+      var tennhanvien = document.createElement("li");
+      maHoSoItem.id = "tennhanvien";
+      maHoSoItem.className = "list-group-item";
+      maHoSoItem.textContent = "Tên nhân viên: " + " Nguyen Ta Bao";
+      additionalListGroup.appendChild(maHoSoItem);
 
 
+      // Append additional list group to modal content
+      modalContent.appendChild(additionalListGroup);
   
-    // Repeat similar steps for other elements in the form
+      // Append modal content to modal dialog
+      modalDialog.appendChild(modalContent);
   
-    // Optionally, you can add a separator between forms
-    var separator = document.createElement("hr");
-    formContainer.appendChild(separator);
-  }
+      // Append modal dialog to the document body
+      var dropdown = document.getElementById("dropdown");
+      dropdown.appendChild(modalDialog);
+    }
+  
+    function createTable(tableId, headers, data) {
+      // Create table element
+      var table = document.createElement("table");
+      table.id = tableId;
+      table.className = "table";
+  
+      // Create table header
+      var thead = document.createElement("thead");
+      var headerRow = document.createElement("tr");
+  
+      headers.forEach(function (headerText) {
+        var th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+      });
+  
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+  
+      // Create table body
+      var tbody = document.createElement("tbody");
+      tbody.className = "table-group-divider";
+  
+      if (Array.isArray(data)) {
+        console.log ("ARRAY ROI")
+        data.forEach(function (rowData) {
+          var row = document.createElement("tr");
+          console.log ("row data don gia" , rowData['dongia'] )
+          // Extract values from each object
+          headers.forEach(function (header) {
+            console.log ("ss" ,  rowData[header])
+            var td = document.createElement("td");
+            td.textContent = rowData[header]; // Adjust key names
+            row.appendChild(td);
+          });
+    
+          tbody.appendChild(row);
+        });
+      }
+  
+      table.appendChild(tbody);
+  
+      return table;
+    }
+  
+
+  
 
 </script>
 </body>

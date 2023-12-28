@@ -9,6 +9,7 @@
   <!-- Remove the extra closing tag for the style element -->
 </head>
 <body>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   {%include "./nhanvien/navbar.html" %}
   <div class="container">
@@ -18,8 +19,8 @@
       <div class="col-6">
         <form class="card p-2">
           <div class="input-group">
-            <input id="userInput" type="text" class="form-control" placeholder="Nhập số điện thoại của bạn tại đây">
-            <button type="button" class="btn btn-secondary" onclick="checkAndShowPopup()">Xác nhận</button>
+            <input id="userInput" type="text" class="form-control"  placeholder="Nhập số điện thoại của bạn tại đây" >
+            <button type="button" class="btn btn-secondary" onclick="checkAndShowPopup2()">Xác nhận</button>
           </div>
         </form>
         
@@ -34,19 +35,43 @@
     </div>
   </div>
 
-<script>
-  function checkAndShowPopup() {
-    var userInputValue = document.getElementById("userInput").value;
 
-    if (userInputValue === "1") {
-      hidePopup ();
-      showDropdown () ;
-    }
-    else {
-      showPopup();
-      hideDropdown();
-    }
+<script>
+  function checkAndShowPopup2() {
+    var userInputValue = document.getElementById("userInput").value;
+    console.log ("13" , userInputValue);
+    sendQueryToDatabase_taotk(userInputValue);
+    
   }
+
+  function sendQueryToDatabase_taotk(userInputValue) {
+    $.ajax({
+      type: "GET",
+      url: "/query-kiemtra-taikhoan", // Update this with the actual route in your Flask app
+      data: { userInput: userInputValue },
+      success: function (data) {
+        // Handle the data received from the server (e.g., update the table)
+        console.log ("data" , data)
+        hidePopup ();
+        if (data == 0) {
+          showPopup();
+          hideDropdown();
+        } 
+        else if (data == 1){
+          hidePopup ();
+          showDropdown () ;
+        }
+        else if (data == 2){
+          alert ('Tài khoản này đã tồn tại!')
+        }
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        console.log("ssss");
+      }
+    });
+  }
+  
 
   function showPopup() {
     // You can modify this function to display the popup as needed

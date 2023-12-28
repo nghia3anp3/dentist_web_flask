@@ -61,17 +61,46 @@
 <script>
   function validateAndSubmit() {
     // Add your validation logic here
-    var isValid = true; // Replace with your validation logic
-
-    if (isValid) {
-      // If valid, show success message in the info modal
-      showInfoModal("Thông tin hợp lệ!");
-    } else {
-      // If not valid, show error message in the info modal
-      showInfoModal("Thông tin không hợp lệ. Vui lòng kiểm tra lại!");
-    }
+    var sdt = document.getElementById('tele').value;
+    var name = document.getElementById('tex').value;
+    var birth = document.getElementById('date_12').value;
+    var address = document.getElementById('tex21').value;
+    var password = document.getElementById('pas21').value;
+    registerUser(sdt, name, birth, address, password);
   }
-
+  function registerUser(sdt, name, birth, address, password) {
+    console.log (sdt, name, birth, address, password);
+    // Make an AJAX request to your Flask server
+    $.ajax({
+      type: "GET",
+      url: "/tao_tk_daydu",  // Update this with the actual route in your Flask app
+      data: {
+        sdt: sdt,
+        name: name,
+        birth: birth,
+        address: address,
+        password: password
+      },
+      success: function (response) {
+        // Handle the response from the server
+        console.log("Server response:", response);
+        // Show success message in the info modal
+        if (response == 1)
+        {
+          showInfoModal("Đăng ký thành công!");
+        }
+        else {
+          showInfoModal("Đăng ký thất bại. Vui lòng thử lại sau!");
+        }
+        
+      },
+      error: function (error) {
+        // Show error message in the info modal
+        showInfoModal("Đã xảy ra lỗi. Vui lòng thử lại sau!");
+        console.error("Error:", error);
+      }
+    });
+  }
   function showInfoModal(message) {
     // Set the message in the info modal body
     document.getElementById("infoModalBody").innerText = message;
