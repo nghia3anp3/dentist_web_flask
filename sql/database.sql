@@ -94,8 +94,7 @@ CREATE TABLE LICHHEN
 	MaLH int,
 	ThoiGianHen datetime NOT NULL,
 	SDT VARCHAR(20) NOT NULL,
-	MaNhaSi VARCHAR(20) NOT NULL,
-	DaXong bit DEFAULT 0
+	MaNhaSi VARCHAR(20) NOT NULL
 
 	PRIMARY KEY (MaLH)
 	FOREIGN KEY (MaNhaSi) REFERENCES NGUOIDUNG(SDT)
@@ -140,14 +139,14 @@ VALUES
 	('630','Trang','NhanVien', 1),
 	('564','Nghia','Admin', 1);
 
-INSERT INTO LICHHEN(MaLH, SDT, MaNhaSi, ThoiGianHen, DaXong)
+INSERT INTO LICHHEN(MaLH, SDT, MaNhaSi, ThoiGianHen)
 VALUES
-	(1, '123', '397', '2023-12-02 15:00:00', 0),
-	(2, '234', '397', '2023-12-03 08:00:00', 0), 	
-	(3, '456', '397', '2023-12-02 10:00:00', 0), 
-	(4, '345', '237', '2023-12-02 11:00:00', 0), 
-	(5, '567', '237', '2023-12-03 20:00:00', 0), 
-	(6, '678', '237', '2023-12-03 07:00:00', 0);
+	(1, '123', '397', '2023-12-02 15:00:00'),
+	(2, '234', '397', '2023-12-03 08:00:00'), 	
+	(3, '456', '397', '2023-12-02 10:00:00'), 
+	(4, '345', '237', '2023-12-02 11:00:00'), 
+	(5, '567', '237', '2023-12-03 20:00:00'), 
+	(6, '678', '237', '2023-12-03 07:00:00');
 
 
 
@@ -163,7 +162,7 @@ VALUES
 INSERT INTO THUOC(MaThuoc, TenThuoc, SoLuongTon, DonGia, NgayHetHan, ChiDinh, TrangThai)
 VALUES
 	('T001', 'Paracetamol', 100, 10000, '2025-12-30', N'Thuốc giảm đau hạ sốt', 1),
-	('T002', 'Panadol', 100, 2000, '2025-12-30', N'Thuốc giảm đau hạ sốt nhẹ', 0),
+	('T002', 'Panadol', 100, 2000, '2025-12-30', N'Thuốc giảm đau hạ sốt nhẹ', 1),
 	('T003', 'Celpha', 100, 5000, '2025-12-30', N'Thuốc kháng viêm', 1),
 	('T004', 'Delta', 100, 8000, '2025-12-30', N'Thuốc điều trị nhiễm khuẩn hô hấp', 1),
 	('T005', 'Gamma', 100, 3000, '2025-12-30', N'Thuốc điều trị rối loạn tuần hoàn não', 1);

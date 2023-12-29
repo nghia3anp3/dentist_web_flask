@@ -2,7 +2,7 @@
 GO
 
 -- KIEM TRA MOT SO DIEN THOAI CO TON TAI TRONG NGUOI DUNG HAY CHUA
-CREATE OR ALTER PROCEDURE sp_KiemTraSdtTonTai
+CREATE PROCEDURE sp_KiemTraSdtTonTai
 				@SDT VARCHAR(20)
 AS
 BEGIN
@@ -22,7 +22,7 @@ GO
 -- GO
 
 -- KIEM TRA TAI KHOAN DA TON TAI HAY CHUA
-CREATE OR ALTER PROCEDURE sp_KiemTraTKTonTai
+CREATE PROCEDURE sp_KiemTraTKTonTai
 				@SDT varchar(20),
 				@LoaiND varchar(10)
 AS
@@ -44,14 +44,16 @@ GO
 CREATE FUNCTION tb_ThuocHienHanh ()
 RETURNS TABLE 
 AS
-	RETURN(SELECT MaThuoc, TenThuoc, DonGia, ChiDinh, SoLuongTon, NgayHetHan FROM THUOC WHERE TrangThai = 1);
+	RETURN( SELECT MaThuoc, TenThuoc, DonGia, ChiDinh, SoLuongTon, NgayHetHan 
+			FROM THUOC 
+			WHERE TrangThai = 1 AND SoLuongTon > 0 );
 GO
 
 -- SELECT * FROM tb_ThuocHienHanh()
 -- GO
 
 -- LAY THONG TIN CUA TOAN BO KHO THUOC
-CREATE OR ALTER PROCEDURE sp_LayThongTinKhoThuoc
+CREATE PROCEDURE sp_LayThongTinKhoThuoc
 AS
 	SELECT * FROM tb_ThuocHienHanh()
 GO
@@ -60,7 +62,7 @@ GO
 -- GO
 
 --LAY THONG TIN NGUOI DUNG TU MOT SO DIEN THOAI
-CREATE OR ALTER PROCEDURE sp_LayThongTinTuSDT 
+CREATE PROCEDURE sp_LayThongTinTuSDT 
 				@SDT VARCHAR(20)
 AS
 	DECLARE @Exist BIT
@@ -75,7 +77,7 @@ GO
 -- GO
 
 --LAY THONG TIN HOA DON TU MOT SO DIEN THOAI
-CREATE OR ALTER PROCEDURE sp_LayHoaDonTuSDT
+CREATE PROCEDURE sp_LayHoaDonTuSDT
 				@SDT VARCHAR(20)
 AS
 BEGIN 
@@ -132,7 +134,7 @@ go
 -- GO
 
 --TIM THUOC (DANG LUU HANH) TU MOT DOAN CUA TEN THUOC
-CREATE OR ALTER PROCEDURE sp_TimThuocBangTen
+CREATE PROCEDURE sp_TimThuocBangTen
 				@TenThuoc VARCHAR(20)
 AS 
 BEGIN
@@ -148,7 +150,7 @@ GO
 -- GO
 
 -- THEM NGUOI DUNG (CO KIEM TRA NGUOI DUNG CO TON TAI HAY CHUA)
-CREATE OR ALTER PROCEDURE sp_ThemNguoiDung
+CREATE PROCEDURE sp_ThemNguoiDung
 				@SDT VARCHAR(20),	
 				@HoTen nvarchar(30),
 				@NgaySinh varchar(15),
@@ -176,7 +178,7 @@ GO
 -- GO
 
 --DANG KY TAI KHOAN (CO KIEM TRA SDT VA TAI KHOAN TON TAI HAY CHUA)
-CREATE OR ALTER PROCEDURE sp_DangKiTaiKhoan
+CREATE PROCEDURE sp_DangKiTaiKhoan
 				@SDT varchar(10),
 				@HoTen nvarchar(30),
 				@NgaySinh DATE,
@@ -223,7 +225,7 @@ GO
 -- Go
 
 --XEM LICH KHAM CUA KHACH HANG (DUOC SU DUNG O NHANVIEN)
-CREATE OR ALTER PROCEDURE sp_XemLichKham
+CREATE PROCEDURE sp_XemLichKham
 				@SDT VARCHAR(20)
 AS
 BEGIN
@@ -251,7 +253,7 @@ GO
 ---------------------------------------------------------------------------------
 
 -- (KhachHang) XEM HO SO BENH AN --
-CREATE OR ALTER PROCEDURE sp_XemHoSoBenhAn 
+CREATE PROCEDURE sp_XemHoSoBenhAn 
 	@SDT VARCHAR(20)
 AS
     DECLARE @DS_BENHAN TABLE(MaHoSo int, NgayKham datetime, MaNhaSi VARCHAR(20), TongTien bigint)
@@ -301,7 +303,7 @@ GO
 -- GO
 
 -- (KhachHang) CAP NHAT THONG TIN --
-CREATE OR ALTER PROCEDURE sp_CapNhatThongTin 
+CREATE PROCEDURE sp_CapNhatThongTin 
     @SDT varchar(20), @HoTen nvarchar(30), @NgaySinh date, @DiaChi nvarchar(50), @MatKhau varchar(20)
 AS
     IF (@HoTen <> '' AND @MatKhau <> '')
@@ -382,7 +384,7 @@ GO
 -- GO
 
 -- (NhaSi) CAP NHAT LICH BAN --
-CREATE OR ALTER PROCEDURE sp_CapNhatLichBan
+CREATE PROCEDURE sp_CapNhatLichBan
     @MaNhaSi varchar(20), @MALB int, @NgayBDMoi varchar(20), @GioBDMoi varchar(20), @NgayKTMoi varchar(20), @GioKTMoi varchar(20)
 AS
     DECLARE @NgayGioBD_Moi DATETIME = CONVERT(DATETIME, @NgayBDMoi + ' ' + LEFT(@GioBDMoi,2) + ':00')
@@ -402,7 +404,7 @@ GO
 -- GO
 
 -- (NhaSi) THEM LICH BAN --
-CREATE OR ALTER PROCEDURE sp_ThemLichBan
+CREATE PROCEDURE sp_ThemLichBan
     @MaNhaSi varchar(20), @NgayBD varchar(20), @GioBD varchar(20), @NgayKT varchar(20), @GioKT varchar(20)
 AS
     DECLARE @NgayGioBD DATETIME = CONVERT(DATETIME, @NgayBD + ' ' + LEFT(@GioBD,2) + ':00')
@@ -425,8 +427,15 @@ GO
 -- EXEC sp_ThemLichBan '237', '2023-12-03', '09:00', '2023-12-03', '10:00'
 -- GO
 
+-- (NhaSi) XEM LICH BAN --
+CREATE PROCEDURE sp_XemLichBan
+	@MaNhaSi varchar(20)
+AS
+	SELECT * FROM LICHBAN WHERE MaNhaSi = @MaNhaSi
+GO
+
 -- (NhanVien) THANH TOAN --
-CREATE OR ALTER PROCEDURE sp_ThanhToan 
+CREATE PROCEDURE sp_ThanhToan 
 	@SDT varchar(20)
 AS
 	DECLARE @isSDTExist BIT
@@ -476,7 +485,7 @@ GO
 -- GO
 
 -- (NhaSi) TAO HO SO BENH AN --
-CREATE OR ALTER PROCEDURE sp_TaoHoSoBenhAn 
+CREATE PROCEDURE sp_TaoHoSoBenhAn 
 	@SDT varchar(20), @MaNhaSi varchar(20)
 AS
 	DECLARE @isSDTExist BIT
@@ -497,7 +506,7 @@ GO
 -- GO
 
 -- (NhaSi) TAO DON THUOC --
-CREATE OR ALTER PROCEDURE sp_TaoDonThuoc 
+CREATE PROCEDURE sp_TaoDonThuoc 
 	@MaHoSo int, @TenThuoc char(30), @SoLuong int
 AS
 	-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
@@ -530,7 +539,7 @@ GO
 -- GO
 
 -- (NhaSi) TAO DON DICH VU --
-CREATE OR ALTER PROCEDURE sp_TaoDonDV 
+CREATE PROCEDURE sp_TaoDonDV 
 	@MaHoSo int, @TenDV nvarchar(50)
 AS
 	-- Kiem tra ten dich vu co ton tai khong
@@ -551,7 +560,7 @@ GO
 -- GO
 
 -- (QTV) KHOA TAI KHOAN --
-CREATE OR ALTER PROCEDURE sp_KhoaTaiKhoan
+CREATE PROCEDURE sp_KhoaTaiKhoan
 	@SDT varchar(20), @LoaiND varchar(10)
 AS
 	-- Kiem tra da co tai khoan chua
@@ -582,7 +591,7 @@ GO
 -- GO
 
 -- (QTV) THEM THUOC --
-CREATE OR ALTER PROCEDURE sp_ThemThuoc
+CREATE PROCEDURE sp_ThemThuoc
 	@TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
 AS
 	-- Tu tang Ma thuoc
@@ -623,7 +632,7 @@ GO
 -- GO
 
 -- (QTV) SUA THONG TIN THUOC --
-CREATE OR ALTER PROCEDURE sp_SuaThongTinThuoc
+CREATE PROCEDURE sp_SuaThongTinThuoc
 	@MaThuoc char(10), @TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
 AS
 	-- Kiem tra thuoc co ton tai de sua khong
@@ -649,7 +658,8 @@ AS
 	END
 
 	-- Cap nhat
-	UPDATE THUOC SET TenThuoc = @TenThuoc, SoLuongTon = @SoLuongTon, DonGia = @DonGia, NgayHetHan = @NgayHetHan, ChiDinh = @ChiDinh
+	UPDATE tb_ThuocHienHanh() 
+	SET TenThuoc = @TenThuoc, SoLuongTon = @SoLuongTon, DonGia = @DonGia, NgayHetHan = @NgayHetHan, ChiDinh = @ChiDinh
 	WHERE MaThuoc = @MaThuoc
 	RETURN 1
 GO
@@ -660,7 +670,7 @@ GO
 -- GO
 
 -- (QTV) XOA THUOC --
-CREATE OR ALTER PROCEDURE sp_XoaThuoc
+CREATE PROCEDURE sp_XoaThuoc
 	@MaThuoc char(10)
 AS
 	-- Kiem tra thuoc co ton tai de xoa khong
@@ -726,7 +736,7 @@ GO
 -- GO
 
 -- DAT LICH KHAM 
-CREATE OR ALTER PROCEDURE sp_DatLichKham
+CREATE PROCEDURE sp_DatLichKham
 	@SDT VARCHAR(20), @HoTen nvarchar(30), @NgaySinh varchar(15), @DiaChi nvarchar(50), 
 	@NgayHen varchar(15), @GioHen varchar(15), @MaNhaSi VARCHAR(20)		
 AS  
@@ -740,7 +750,7 @@ AS
 
 	-- Them lich hen
 	DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
-	INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioHen, @SDT, @MaNhaSi, 0)
+	INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioHen, @SDT, @MaNhaSi)
 
 	-- Them nguoi dung neu chua co
 	DECLARE @isSDTExist BIT
@@ -755,3 +765,137 @@ GO
 
 -- EXEC sp_DatLichKham '000', N'Nguyễn Văn M','2003-11-11', N'Gia Lâm, Hà Nội', '2020-01-10', '15:00', '397'
 -- GO
+
+-- ============ TRIGGER ============
+-- R1: INSERT LICHHEN (MaNhaSi)
+CREATE TRIGGER trgThem_LichHen_NhaSi
+ON LICHHEN
+FOR insert
+AS
+BEGIN 
+	IF NOT EXISTS ( SELECT * 
+					FROM inserted i, TAIKHOAN
+					WHERE i.MaNhaSi = TAIKHOAN.SDT AND LoaiND = 'BacSi' )
+	BEGIN
+		RAISERROR (N'Không tồn tại (tài khoản) nha sĩ', 16, 1)
+		ROLLBACK
+	END
+END
+GO
+
+-- INSERT INTO LICHHEN VALUES (8, '2023-12-02 15:00:00', '345', '630')
+-- INSERT INTO LICHHEN VALUES (8, '2023-12-05 20:00:00', '345', '397')
+
+-- R2: INSERT, UPDATE DONDICHVU (DonGia)
+CREATE TRIGGER trgThem_CapNhatDonDV_DonGia
+ON DONDICHVU
+FOR insert, update
+AS
+BEGIN 
+	IF NOT EXISTS ( SELECT * 
+					FROM inserted i, DICHVU DV 
+					WHERE DV.MaDV = i.MaDV AND DV.DonGia = i.DonGia )
+	BEGIN
+		RAISERROR (N'Đơn giá không đúng tại thời điểm thêm/sửa', 16, 1)
+		ROLLBACK
+	END
+END
+GO
+-- INSERT INTO DONDICHVU VALUES (3, 'D002', 200)
+-- UPDATE DONDICHVU SET DonGia = 200 WHERE MaDonDV = 1 AND MaDV = 'D001'
+
+-- R3: INSERT, UPDATE DONTHUOC (DonGia)
+CREATE TRIGGER trgThem_CapNhatDonThuoc_DonGia
+ON DONTHUOC
+FOR insert, update
+AS
+BEGIN 
+	IF NOT EXISTS ( SELECT * 
+					FROM inserted i, THUOC T 
+					WHERE T.MaThuoc = i.MaThuoc AND T.DonGia = i.DonGia )
+	BEGIN
+		RAISERROR (N'Đơn giá không đúng tại thời điểm thêm/sửa', 16, 1)
+		ROLLBACK
+	END
+END
+GO
+-- INSERT INTO DONTHUOC VALUES (1, 'T003', 5, 20)
+-- UPDATE DONTHUOC SET DonGia = 20 WHERE MaDonThuoc = 1 AND MaThuoc = 'T001'
+
+-- R4: INSERT, UPDATE DONTHUOC (SoLuong)
+CREATE TRIGGER trgThem_CapNhatDonThuoc_SoLuong
+ON DONTHUOC
+FOR insert, update
+AS
+BEGIN
+	IF EXISTS ( SELECT * 
+				FROM inserted i, THUOC T 
+				WHERE i.MaThuoc = T.MaThuoc
+				AND T.TrangThai = 0)
+	BEGIN
+		RAISERROR (N'Thuốc đã bị xoá nên không thêm/sửa được', 16, 1)
+		ROLLBACK
+		RETURN
+	END
+
+	IF EXISTS ( SELECT *
+				FROM inserted i, deleted d, THUOC T
+				WHERE T.MaThuoc = i.MaThuoc AND T.MaThuoc = d.MaThuoc
+				AND (T.SoLuongTon - i.SoLuong + d.SoLuong) = 0 )
+	BEGIN
+		UPDATE THUOC SET TrangThai = 0 
+		WHERE EXISTS (SELECT * FROM inserted i, THUOC T WHERE i.MaThuoc = T.MaThuoc)
+		
+		PRINT N'Thuốc tự động xoá vì hết thuốc'
+		RETURN
+	END
+
+	IF NOT EXISTS ( SELECT *
+					FROM inserted i, deleted d, THUOC T
+					WHERE T.MaThuoc = i.MaThuoc AND T.MaThuoc = d.MaThuoc
+					AND (T.SoLuongTon - i.SoLuong + d.SoLuong) > 0 )
+	BEGIN
+		RAISERROR (N'Số lượng tồn của thuốc không đáp ứng được việc thêm/sửa số lượng thuốc trong đơn thuốc', 16, 1)
+		ROLLBACK
+	END
+END
+GO
+
+-- INSERT INTO DONTHUOC VALUES (3, 'T002', 10, 2000)
+-- UPDATE DONTHUOC SET SoLuong = 106 WHERE MaDonThuoc = 1 AND MaThuoc = 'T001'
+-- UPDATE DONTHUOC SET SoLuong = 105 WHERE MaDonThuoc = 1 AND MaThuoc = 'T001'
+-- UPDATE DONTHUOC SET SoLuong = 20 WHERE MaDonThuoc = 1 AND MaThuoc = 'T002'
+
+-- R5 + R6:
+----- INSERT LICHHEN (ThoiGianHen)
+CREATE TRIGGER trgThemLichHen_TGHen
+ON LICHHEN
+FOR insert
+AS
+BEGIN
+	DELETE LICHHEN WHERE MaLH = (SELECT MaLH FROM inserted)
+
+	IF EXISTS (SELECT * FROM inserted WHERE dbo.f_KTLichHenHopLe(MaNhaSi, ThoiGianHen) = 0)
+	BEGIN
+		RAISERROR (N'Nha sĩ đã có lịch hẹn khác hoặc lịch bận cá nhân', 16, 1)
+		ROLLBACK
+	END
+	DECLARE @MaLH int, @ThoiGianHen datetime, @SDT varchar(20), @MaNhaSi varchar(20)
+	SELECT @MaLH = MaLH, @ThoiGianHen = ThoiGianHen, @SDT = SDT, @MaNhaSi = MaNhaSi
+	FROM inserted
+	INSERT INTO LICHHEN VALUES (@MaLH, @ThoiGianHen, @SDT, @MaNhaSi)
+END
+GO
+----- INSERT, UPDATE LICHBAN (NgayGioBatDau, NgayGioKetThuc)
+CREATE TRIGGER trgThem_CapNhatLichBan_NgayGio
+ON LICHBAN
+FOR insert, update
+AS
+BEGIN 
+	IF EXISTS (SELECT * FROM inserted WHERE dbo.f_KTLichBanHopLe(MaNhaSi, NgayGioBatDau, NgayGioKetThuc) = 0)
+	BEGIN
+		RAISERROR (N'Nha sĩ đã có lịch hẹn với khách hàng', 16, 1)
+		ROLLBACK
+	END
+END
+GO

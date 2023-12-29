@@ -1,15 +1,14 @@
 USE HQT_CSDL
 GO
 
-SELECT * FROM tb_ThuocHienHanh()
+SELECT * FROM LICHHEN
 ---
 DECLARE @RT INT
--- EXEC @RT = USP_ThemThuoc 'Alaxan', 7000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
-EXEC @RT = USP_XoaThuoc 'T001'
+EXEC @RT = USP_DatLichHen '123', N'Nguyễn Văn A', '2003-11-02', N'Bảo Lộc, Lâm Đồng', '2024-01-20', '14:00', '397'
 IF @RT = 0
-	PRINT N'Xoá thất bại'
+	PRINT N'Đặt lịch hẹn thất bại'
 ELSE
-	PRINT N'Xoá thành công'
+	PRINT N'Đặt lịch hẹn thành công'
 ---
-SELECT * FROM tb_ThuocHienHanh()
--- UPDATE THUOC SET TrangThai = 1 WHERE MaThuoc = 'T001'
+SELECT * FROM LICHHEN
+-- DELETE FROM LICHHEN WHERE MaLH = 7

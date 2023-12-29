@@ -1,14 +1,15 @@
 USE HQT_CSDL
 GO
 
-SELECT * FROM LICHBAN
+SELECT * FROM tb_ThuocHienHanh()
 ---
 DECLARE @RT INT
-EXEC @RT = USP_CapNhatLichBan '397', 1, '2024-04-20', '12:00', '2024-04-20', '15:00'
+-- EXEC @RT = USP_ThemThuoc 'Alaxan', 7000, N'Thuốc giảm đau kháng viêm', 100, '2025-12-30'
+EXEC @RT = USP_XoaThuoc 'T001'
 IF @RT = 0
-	PRINT N'Cập nhật thất bại'
+	PRINT N'Xoá thất bại'
 ELSE
-	PRINT N'Cập nhật thành công'
+	PRINT N'Xoá thành công'
 ---
-SELECT * FROM LICHBAN
--- UPDATE LICHBAN SET NgayGioBatDau = '2023-12-02 05:00:00', NgayGioKetThuc = '2023-12-02 07:00:00' WHERE MALB = 1
+SELECT * FROM tb_ThuocHienHanh()
+-- UPDATE THUOC SET TrangThai = 1 WHERE MaThuoc = 'T001'
