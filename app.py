@@ -84,10 +84,12 @@ def login():
         return jsonify({'redirect': '/dentist'})  
     elif rows[0][0] == 'NhanVien':
         # session['route'] = 'NhanVien'
+        print ("vo nhan vien roi ne")
         session['sdt'] = sdt
         return jsonify({'redirect': '/staff'})
     elif rows[0][0] == 'Khach':
         # session['route'] = 'Khach'
+        print ("vo khach roi ne")
         session['sdt'] = sdt
         return jsonify({'redirect': '/user'})     
      
@@ -661,12 +663,6 @@ def query_database_xuathoadon():
         # Replace the following line with the actual result from your database query
         cursor = conn.cursor ()
         cursor.execute("{CALL Get_bill_info_from_SDT(?)}", (user_input,))
-#         query = """DECLARE @TEST BIT
-# EXEC @TEST = sp_KiemTraSdtTonTai '{}'
-# SELECT @TEST AS COLU
-#         """.format (user_input)
-#         cursor.execute(query)
-        
         thongtin = cursor.fetchall()
         print ("hehehe" , thongtin)
         cursor.nextset()
@@ -674,38 +670,42 @@ def query_database_xuathoadon():
         cursor.nextset()
         dichvu = cursor.fetchall()
         
-        print (thongtin , thuoc, dichvu)
+        print ("hehe" ,thongtin , thuoc, dichvu)
         # Commit the transaction
         conn.commit()
         # Close the connection
         cursor.close()
-        if len (thongtin) == 0 :
+        hoa_don_list = []
+        for hoa_don in thongtin :
+            tongtien = hoa_don[4]
+            print ('tongtien' , type (tongtien) )
+            if tongtien == 0 :
+                ## append hoa don id vao
+                hoa_don_list.append (hoa_don[0])
+        if len (hoa_don_list) == 0 :
             return jsonify (0)
         else :
+            # Chi lum thong tin cua nhung hoa don chua thanh toan
             thongtin = [{"mahoadon" : thongtin[i][0],
                         "ngaykham":thongtin[i][1],
                         "manhasi": thongtin[i][2],
                         "tennhasi": thongtin[i][3],
                         "tongtien":thongtin[i][4]
-                        } for i in range (len(thongtin))]
+                        } for i in range (len(thongtin)) if thongtin[i][0] in hoa_don_list]
             thuoc = [{"mahoadonthuoc" : thuoc[i][0],
                 "Mã thuốc" : thuoc[i][1],
                         "Tên Thuốc":thuoc[i][2],
                         "Số Lượng": thuoc[i][3],
                         "Đơn giá": thuoc[i][4],
-                        } for i in range (len(thuoc))]
+                        } for i in range (len(thuoc)) if thuoc[i][0] in hoa_don_list]
 
             dichvu = [{"mahoadondichvu": dichvu[i][0],
                 "Mã Dịch Vụ" : dichvu[i][1],
                         "Tên Dịch Vụ":dichvu[i][2],
                         "Đơn giá": dichvu[i][3],
                         "Số Lượng Dịch Vụ": 1,
-                        } for i in range (len(dichvu))]
-            
-            # thuoctheohd_list = []
-            # dichvutheohd_list = []
-            # thongtin_list = []
-            # for i in range (len (thongtin) ) :
+                        } for i in range (len(dichvu)) if dichvu[i][0] in hoa_don_list ] 
+            print ("huhu" , thongtin , thuoc, dichvu)
             thuoctheohd = []
             dichvutheohd = []
             mahd = thongtin[0]["mahoadon"]
@@ -817,6 +817,7 @@ def query_database_datlichhen():
     # Replace the following line with the actual result from your database query
     cursor = conn.cursor ()
     cursor.execute("{CALL sp_LayThongTinTuSDT(?)}", (user_input,))
+    
     rows = cursor.fetchall()
      # Commit the transaction
     conn.commit()

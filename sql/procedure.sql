@@ -896,3 +896,67 @@ BEGIN
 	END
 END
 GO
+
+
+CREATE PROCEDURE Get_bill_info_from_SDT
+				@SDT VARCHAR(20)
+AS
+BEGIN 
+	DECLARE @Exist BIT
+
+	SELECT @Exist = CASE 
+						WHEN EXISTS(SELECT 1 FROM HOSOBENHAN WHERE SDT = @SDT) THEN 1
+						ELSE 0
+					END
+	IF @Exist = 1
+	BEGIN
+		 
+		SELECT HSBA.MaHoSo AS MaHoaDon, CONVERT(date,HSBA.NgayKham) as NgayKham, HSBA.MaNhaSi, NS.HoTen as TenNhaSi,
+			   HSBA.TongTien AS TongTien
+		FROM HOSOBENHAN HSBA JOIN NGUOIDUNG NS ON HSBA.MaNhaSi = NS.SDT
+	    WHERE HSBA.SDT = @SDT
+
+		SELECT HSBA.MaHoSo AS MaHoaDon, T.MaThuoc, T.TenThuoc, DT.SoLuong, DT.DonGia
+		FROM HOSOBENHAN HSBA JOIN DONTHUOC DT ON DT.MaDonThuoc = HSBA.MaHoSo
+							 JOIN THUOC T ON T.MaThuoc = DT.MaThuoc
+		WHERE HSBA.SDT = @SDT
+
+		SELECT HSBA.MaHoSo AS MaHoaDon, DDV.MaDV, DV.TenDV, DV.DonGia
+		FROM HOSOBENHAN HSBA JOIN DONDICHVU DDV ON DDV.MaDonDV = HSBA.MaHoSo 
+							 JOIN DICHVU DV ON DV.MaDV = DDV.MaDV
+		WHERE HSBA.SDT = @SDT
+	END
+	ELSE
+	BEGIN
+		SELECT 0 AS Result
+	END
+END;
+GO
+exec Get_bill_info_from_SDT @SDT= "123"
+GO
+
+CREATE PROCEDURE Dang_nhap
+    @SDT VARCHAR(20),
+    @MatKhau VARCHAR(50)
+AS
+
+BEGIN
+    DECLARE @Exists BIT
+
+    SELECT @Exists = CASE 
+                        WHEN EXISTS (SELECT 1 FROM TAIKHOAN WHERE SDT = @SDT AND TrangThai = 1 AND MatKhau = @MatKhau)
+                        THEN 1
+                        ELSE 0
+                    END
+
+    IF @Exists = 1
+    BEGIN
+        SELECT TOP 1 LoaiND FROM TAIKHOAN WHERE SDT = @SDT AND TrangThai = 1 AND MatKhau = @MatKhau
+    END
+    ELSE
+    BEGIN
+        SELECT 0 AS Result
+    END
+END
+GO
+EXEC Dang_nhap @SDT='20',@MatKhau='thu'
