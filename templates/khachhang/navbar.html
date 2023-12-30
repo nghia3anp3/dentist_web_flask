@@ -10,7 +10,27 @@
       <a class="link-secondary" href="#" aria-label="Search">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="mx-3" role="img" viewBox="0 0 24 24"><title>Search</title><circle cx="10.5" cy="10.5" r="7.5"/><path d="M21 21l-5.2-5.2"/></svg>
       </a>
-      <a class="btn btn-sm btn-outline-secondary" href="#">Đăng Xuất</a>
+      <a class="btn btn-sm btn-outline-secondary" id="logout">Đăng Xuất</a>
     </div>
   </div>
+  <script>
+      $(document).ready(function() {
+            $("#logout").click(function() {
+                fetch('/logout', {
+                    method: 'GET'
+                })  
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Logged out successfully');
+                        window.location.href = response.url;
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+  </script>
 </header>

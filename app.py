@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify,session, make_response
-import pandas as pd
+from flask_session import Session
+# import pandas as pd
 import pypyodbc as obdc
 
 from datetime import datetime
