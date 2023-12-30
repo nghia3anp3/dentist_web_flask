@@ -36,12 +36,12 @@
   
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a class="navbar-item">
+        <a class="navbar-item" id="nut_home">
           Home
         </a>
   
-        <a class="navbar-item">
-          Arrange an appointment
+        <a class="navbar-item" id="dat_lich">
+          Đặt lịch hẹn
         </a>
   
         <div class="navbar-item has-dropdown is-hoverable">
@@ -74,7 +74,7 @@
       <div class="container">
         <div class="columns">
           <div class="column is-8">
-            <p id="welcome" style="font-size: 80px;">Welcome to <br> Dentist Center!</p>
+            <p id="welcome" style="font-size: 80px;">Đăng ký</p>
           </div>
           <div class="column is-2-tablet is-4-desktop is-3-widescreen">
             <form action="/submit_form" class="box" method="POST" id="signupForm">
@@ -150,6 +150,18 @@
   <script src="static/jquery-3.7.1.min.js"></script>
   <script>
 
+
+    $(document).ready(function() {
+        $("#dat_lich").click(function() {
+          location.replace('/datlich');
+        })
+    });
+
+    $(document).ready(function() {
+        $("#nut_home").click(function() {
+          location.replace('/home');
+        })
+    });
   </script>
 </body>
 

@@ -40,8 +40,8 @@
           Home
         </a>
   
-        <a class="navbar-item">
-          Arrange an appointment
+        <a class="navbar-item" id="dat_lich">
+          Đặt lịch hẹn
         </a>
   
         <div class="navbar-item has-dropdown is-hoverable">
@@ -104,7 +104,7 @@
                 <div class="field">
                   <p>Bạn không có tài khoản? <a class="has-text-primary" id="sign_upButton">Đăng ký!</a></p>
                 </div>
-                <div class="field"><p>hoặc <a class="has-text-primary" id="sign_upButton">Đặt lịch ngay!</a></p>
+                <div class="field"><p>hoặc <a class="has-text-primary" id="dat_lichButton">Đặt lịch ngay!</a></p>
                 </div>
               </div>
             </form>
@@ -131,6 +131,18 @@
     });
 
     $(document).ready(function() {
+        $("#dat_lichButton").click(function() {
+          location.replace('/datlich');
+        })
+    });
+
+    $(document).ready(function() {
+        $("#dat_lich").click(function() {
+          location.replace('/datlich');
+        })
+    });
+
+    $(document).ready(function() {
         $("#loginButton").click(function() {
             var username = $("#username").val();
             var password = $("#password").val();
@@ -140,8 +152,11 @@
                 url: "/login",
                 data: { username: username, password: password },
                 success: function(response) {
-                if (response.message) {
-                    alert(response.message);
+                if (response.warning) {
+                    alert(response.warning);
+                    if (response.redirect) {
+                      location.replace(response.redirect);
+                    }
                 } else if (response.redirect) {
                     alert('Đăng nhập thành công!');
                     location.replace(response.redirect);

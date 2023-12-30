@@ -99,6 +99,10 @@ header .current-date{
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
+.days li.busy-active::before{
+  background: #7fa7ac;
+}
+
 .days li.active::before{
   background: #9B59B6;
 }

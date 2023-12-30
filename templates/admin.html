@@ -96,6 +96,7 @@
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            min-width: 130px;
         }
 
         /* Style cho dòng dữ liệu trong bảng */
@@ -123,6 +124,19 @@
         .scrollable-table {
         max-height: 450px; 
         overflow-y: auto;
+        }
+        .row:hover {
+            cursor: pointer;
+            background-color: #f0f0f0; /* Đổi màu nền khi rê chuột vào */
+            font-weight: bold;
+        }
+        dialog::backdrop {
+         backdrop-filter: blur(2px);
+        }
+
+        .field-not-edit {
+            background-color: #c1bfbf;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -162,7 +176,7 @@
                     <h1 class="function-font">
                         Tạo tài khoản
                     </h1>
-                </div>
+                </div>  
                 <div class="block button-border show-lock">
                     <h1 class="function-font">
                         Khóa tài khoản
@@ -174,76 +188,107 @@
                 </div>
             </div>
 
-            <div class="column functional" id="create-form" style="display: none;margin-top: 20px;">
-                <form action="/submit_form" class="box" method="POST" id="createForm" style="display: flex; justify-content: center; align-items: center;">
-                    <div class="field">
-                      <h1>Số điện thoại</h1>
-                      <div class="control has-icons-left">
-                        <input type="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
+            <div class="column functional" id="create-form" style="display: none; justify-content: center; align-items: center;">
+                <form action="/submit_form" class="box" method="POST" id="createForm" style="display: flex; justify-content: center;">
+                    <div style="padding-right: 40px;">
+                        <div class="field">
+                            <h1>Số điện thoại</h1>
+                            <div class="control has-icons-left">
+                              <input type="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
+                              <span class="icon is-small is-left">
+                                <i class="fa fa-envelope"></i>
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div class="field">
+                            <h1>Mậu khẩu</h1>
+                            <div class="control has-icons-left">
+                            <input class="input" type="password" name="password">
+                              <span class="icon is-small is-left">
+                                <i class="fa-regular fa-calendar"></i>
+                              </span>
+                            </div>
+                          </div>
+
+                          <div class="field">
+                            <h1>Họ và tên</h1>
+                            <div class="control has-icons-left">
+                              <input type="text" placeholder="Lê A" class="input" name="full_name" required>
+                              <span class="icon is-small is-left">  
+                                <i class="fa-solid fa-signature"></i>
+                              </span>
+                            </div>
+                          </div>
+                    </div>
+    
+                    <div>
+                        <div class="field">
+                            <h1>Ngày sinh</h1>
+                            <div class="control has-icons-left">
+                            <input class="input" type="date" name="date">
+                              <span class="icon is-small is-left">
+                                <i class="fa-regular fa-calendar"></i>
+                              </span>
+                            </div>
+                          </div>
+            
+                          <div class="field">
+                            <h1>Địa chỉ</h1>
+                            <div class="control has-icons-left">
+                                <input type="text" placeholder="Lê A" class="input" name="address" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h1>Chức năng</h1>
+                            <div class="select" style="margin-top: 20px; margin-left: 16px;">
+                                <select name="chuc_nang" style="width: 195px;">
+                                    <option>Bác sĩ</option>
+                                    <option>Nhân viên</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </form>
+                <div class="field" style="margin-left: 30px;">
+                    <button class="button is-info" id="create-button">
+                        Đăng ký
+                    </button>
+                </div>
+            </div>  
+
+
+            <div class="column functional" id="lock-form" style="display: none; justify-content: center; align-items: center;">
+                <form action="/submit_form" class="box" method="POST" id="lockForm">
+                    <div class="field" style="display: flex; justify-content: center; align-items: center;">
+                      <h1>Nhập số điện thoại của tài khoản cần khóa</h1>
+                      <div class="control has-icons-left" style="margin-left: 30px;">
+                        <input type="phone" placeholder="0123456789" class="input" name="phone_lock" autocomplete="additional-name">
                         <span class="icon is-small is-left">
                           <i class="fa fa-envelope"></i>
                         </span>
                       </div>
                     </div>
+                    <div id="update_lock_table">
+                    </div>
                     
-                    <div class="field">
-                      <h1>Mật khẩu</h1>
-                      <div class="control has-icons-left">
-                        <input type="password" placeholder="*******" class="input" name="password" required>
-                        <span class="icon is-small is-left">
-                          <i class="fa fa-lock"></i>
-                        </span>
-                      </div>
-                    </div>
-      
-                    <div class="field">
-                      <h1>Họ và tên</h1>
-                      <div class="control has-icons-left">
-                        <input type="text" placeholder="Lê A" class="input" name="full_name" required>
-                        <span class="icon is-small is-left">
-                          <i class="fa-solid fa-signature"></i>
-                        </span>
-                      </div>
-                    </div>
-      
-                    <div class="field">
-                      <h1>Chọn chức năng</h1>
-                      <div class="select is-primary">
-                        <select style="margin: 10px">
-                          <option>Bác sĩ</option>
-                          <option>Nhân viên</option>
-                        </select>
-                      </div>
-                    </div>
-                  </form>
-                  <div class="field">
-                    <button class="button is-success" id="signupButton">
-                      Đăng ký
-                    </button>
-                  </div>
-            </div>  
-
-            <div class="column functional" id="lock-form" style="margin-left: 20px;display: none;">
-                <div>
-                    <h1 class="function-font">Nhập số điện thoại của tài khoản cần khóa:</h1>
-                </div>
-                <div class="field block">
-                      <input class="input" type="phone" placeholder="Phone">
-                </div>  
-                <div class="columns is-centered">
-                    <div class="column is-6">
-                      <div class="buttons is-centered">
-                        <button class="button" id="lock-button">Khóa tài khoản</button>
-                      </div>
-                    </div>
-                </div>
+                </form>
+                <button class="button" id="lock-button" style="margin-left: 30px; margin-bottom: 20px;" >Khóa tài khoản</button>
             </div>
 
-            <div class="column functional" id="medicine-form" style="margin-left: 20px;display: none;">
+            <div class="column functional" id="medicine-form" style="margin-left: 20px; display: none;">
                 <div class="columns">
                     <div class="column">
                         <span>
-                            <i class="fa-solid fa-hospital" style="font-size: 30px;"></i>
+                            <button class="custom-button button is-active" id="show_medicine">
+                                <i class="fa-solid fa-hospital" style="font-size: 30px;"></i>
+                            </button>
                         </span>
                     </div>
                     <div class="column is-2">
@@ -255,10 +300,6 @@
                             <button class="custom-button button is-active" id="add">
                                 <i class="fa-solid fa-file-circle-plus function-icon"></i>
                             </button>
-                            
-                            <button class="custom-button button is-active delete-btn">
-                                <i class="fa-solid fa-trash function-icon"></i>
-                            </button>  
                         </span>
                     </div>
                 </div>         
@@ -266,12 +307,7 @@
                 <div class="following-function" id="main-table">
                     <div class="field has-addons" id="searchDiv" style="justify-content: center; display: none;">
                         <div class="control" style="width: 70%;">
-                        <input class="input" type="text" style="width: 100%;" placeholder="Find a repository">
-                        </div>
-                        <div class="control" style="display: flex; align-items: center;">
-                        <a class="button is-info">
-                            Search
-                        </a>
+                        <input class="input" type="text" style="width: 100%;" placeholder="Nhập tên thuốc" id="searchBar">
                         </div>
                     </div>
                     <div class="scrollable-table" id="medicine-table">
@@ -288,164 +324,111 @@
                             </thead>
                             
                             <tbody id="drugTableBody">
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 2</td>
-                                    <td>Tên thuốc B</td>
-                                    <td>20000</td>
-                                    <td>Chỉ định B</td>
-                                    <td>200</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Mã thuốc 1</td>
-                                    <td>Tên thuốc A</td>
-                                    <td>10000</td>
-                                    <td>Chỉ định A</td>
-                                    <td>50</td>
-                                    <td>31/12/2023</td>
-                                </tr>
                             </tbody>
                         </table>
+
+                        <dialog id="modal" style="border-radius: 5%;">
+                            <form action="" class="box" method="POST" style="width: 600px;" id="edit_medicine_form">
+                                <div style="display: flex; align-items: center; justify-content: center; border-bottom: 3px solid black; margin-bottom: 20px;">
+                                    <h1 style="padding: 20px; font-size:20px;"><b>Chỉnh sửa thông tin thuốc</b></h1>
+                                </div>
+                                <div class="columns">
+                                    <div class="column">
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Mã thuốc: 
+                                    </h1>
+                                    <input class="input" type="mathuoc" placeholder="Mã thuốc" name="mathuoc">
+                                </div>  
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Tên thuốc: 
+                                    </h1>
+                                    <input class="input" type="tenthuoc" placeholder="Tên thuốc" name="tenthuoc">
+                                </div> 
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Đơn giá thuốc: 
+                                    </h1>
+                                    <input class="input" type="dongiathuoc" placeholder="Đơn giá thuốc" name="dongiathuoc">
+                                </div> 
+                            </div>
+                            <div class="column">
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Chỉ định thuốc: 
+                                    </h1>
+                                    <input class="input" type="chidinhthuoc" placeholder="Chỉ định thuốc" name="chidinhthuoc">
+                                </div> 
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Số lượng tồn: 
+                                    </h1>
+                                    <input class="input" type="soluongton" placeholder="Số lượng tồn" name="soluongton">
+                                </div> 
+                                <div class="field block">
+                                    <h1 class="following-function">
+                                        Ngày hết hạn: 
+                                    </h1>
+                                    <input class="input" type="ngayhethan" placeholder="Ngày hết hạn" name="ngayhethan">
+                                </div> 
+                            </div>
+                            </div >  
+                            <div class="buttons is-centered" style="display: flex; border-top: 3px solid black; padding: 20px;">
+                                <button class="button" id="medicine-edit-button" style="margin-right: 30px; flex: 0.3;">Sửa thông tin</button>
+                                <button class="button" id="medicine-delete-button" style="margin-left: 30px; flex: 0.3;">Xoá</button>
+                            </div>
+                            </form>
+                        </dialog>
                     </div>
-                <div class="following-function" id="add-table" style="display: none;">
-                    <div class="block">
-                        <h1 class="function-font">Thông tin thuốc:</h1>
-                    </div>
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Mã thuốc: 
-                        </h1>
-                          <input class="input" type="mathuoc" placeholder="Mã thuốc">
-                    </div>  
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Tên thuốc: 
-                        </h1>
-                          <input class="input" type="tenthuoc" placeholder="Tên thuốc">
-                    </div> 
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Đơn giá thuốc: 
-                        </h1>
-                          <input class="input" type="dongiathuoc" placeholder="Đơn giá thuốc">
-                    </div> 
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Chỉ định thuốc: 
-                        </h1>
-                          <input class="input" type="chidinhthuoc" placeholder="Chỉ định thuốc">
-                    </div> 
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Số lượng tồn: 
-                        </h1>
-                          <input class="input" type="soluongton" placeholder="Số lượng tồn">
-                    </div> 
-                    <div class="field block">
-                        <h1 class="following-function">
-                            Ngày hết hạn: 
-                        </h1>
-                          <input class="input" type="ngayhethan" placeholder="Ngày hết hạn">
-                    </div> 
-                    <!--  -->
-                    <div class="columns is-centered">
-                        <div class="column is-6">
-                          <div class="buttons is-centered">
-                            <button class="button" id="medicine-button">Thêm</button>
-                          </div>
+                <div class="following-function" id="add-table" style="display: none; align-items: center; justify-content: center;">
+                    <form action="" class="box" style="width: 800px;" id="add-form">
+                        <div style="display: flex; align-items: center; justify-content: center; border-bottom: 3px solid black; margin-bottom: 20px;">
+                            <h1 style="padding: 20px"><b>Thông tin thuốc</b></h1>
                         </div>
+                        <div class="columns">
+                            <div class="column">
+                        <div class="field block">
+                            <h1 class="following-function">
+                                Tên thuốc: 
+                            </h1>
+                            <input class="input" type="tenthuoc" placeholder="Tên thuốc" name="tenthuoc-add">
+                        </div> 
+                        <div class="field block">
+                            <h1 class="following-function">
+                                Đơn giá thuốc: 
+                            </h1>
+                            <input class="input" type="dongiathuoc" placeholder="Đơn giá thuốc" name="dongiathuoc-add">
+                        </div> 
                     </div>
+                    <div class="column">
+                        <div class="field block">
+                            <h1 class="following-function">
+                                Chỉ định thuốc: 
+                            </h1>
+                            <input class="input" type="chidinhthuoc" placeholder="Chỉ định thuốc" name="chidinhthuoc-add">
+                        </div> 
+                        <div class="field block">
+                            <h1 class="following-function">
+                                Số lượng tồn: 
+                            </h1>
+                            <input class="input" type="soluongton" placeholder="Số lượng tồn" name="soluongton-add">
+                        </div> 
+                    </div>
+                    <div class="column">
+                        <div class="field block">
+                            <h1 class="following-function">
+                                Ngày hết hạn: 
+                            </h1>
+                            <input class="input" type="date" placeholder="Ngày hết hạn" name="ngayhethan-add">
+                        </div> 
+                    </div>
+                    </div>  
+                        <div class="buttons is-centered">
+                          <button class="button" id="add-medicine-button" style="margin-right: 40px;">Thêm</button>
+                        </div>
+                    </form>
+                    <!--  -->
                 </div>
                 <div class="following-function" id="delete-table" style="display: none;">
                     <div>
@@ -487,6 +470,55 @@
                 });
             });
         });
+
+    $(document).ready(function() {
+    $('#create-button').on('click', function() {
+      var formData = $('#createForm').serialize(); // Serialize form data
+      
+      $.ajax({
+        type: 'POST',
+        url: '/admin_create_account',
+        data: formData,
+        success: function(response) {
+          // Handle the JSON response from Flask
+          if (response.status === 'error') {
+            // Display an alert for error message
+            alert(response.message);
+          } else {
+            // Show success message or perform other actions if needed
+            alert(response.message);
+            // Optionally, you can redirect the user or perform other actions on success
+          }
+        },
+        error: function(err) {
+          // Handle any errors that occur during the request
+          console.error('Error:', err);
+        }
+      });
+    });
+  });
+
+  $(document).ready(function() {
+    $('#lock-button').on('click', function() {
+      var formData = $('#lockForm').serialize(); // Serialize form data
+      
+      $.ajax({
+        type: 'POST',
+        url: '/lock_account',
+        data: formData,
+        success: function(response) {
+          if (response.status === 'error') {
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        },
+        error: function(err) {
+          console.error('Error:', err);
+        }
+      });
+    });
+  });
     </script>
 </body>
 </html>

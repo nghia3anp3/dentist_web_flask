@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HQT CSDL</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    .custom-font {
+      font-family: 'Your Font Name', serif;
+      font-size: 80px;
+    }
+
+    #welcome{
+      position: absolute;
+      left: 100px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://bulma.io">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL70xIMknj57aIZrplKeiyDPotvMhepi7eb0SrVXXisIAUbS8w" width="30" height="15">
+      </a>
+  
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+  
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" id="nut_home">
+          Home
+        </a>
+  
+        <a class="navbar-item">
+          Đặt lịch hẹn
+        </a>
+  
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+  
+          <div class="navbar-dropdown">
+            <a class="navbar-item">
+              About
+            </a>
+            <a class="navbar-item">
+              Jobs
+            </a>
+            <a class="navbar-item">
+              Contact
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item">
+              Report an issue
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero is-warning is-fullheight">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-6">
+            <p id="welcome" style="font-size: 80px; margin-top: 30px;">Đặt lịch</p>
+          </div>
+          <div class="column is-2-tablet is-5-desktop is-5-widescreen" >
+            <form action="/submit_form" class="box" method="POST" id="signupForm" style="display: flex; justify-content: center;">
+                <div style="padding-right: 40px;">
+                    <div class="field">
+                        <h1>Số điện thoại</h1>
+                        <div class="control has-icons-left">
+                          <input type="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
+                          <span class="icon is-small is-left">
+                            <i class="fa fa-envelope"></i>
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div class="field">
+                        <h1>Họ và tên</h1>
+                        <div class="control has-icons-left">
+                          <input type="text" placeholder="Lê A" class="input" name="full_name" required>
+                          <span class="icon is-small is-left">  
+                            <i class="fa-solid fa-signature"></i>
+                          </span>
+                        </div>
+                      </div>
+        
+                      <div class="field">
+                        <h1>Ngày sinh</h1>
+                        <div class="control has-icons-left">
+                        <input class="input" type="date" name="date">
+                          <span class="icon is-small is-left">
+                            <i class="fa-regular fa-calendar"></i>
+                          </span>
+                        </div>
+                      </div>
+        
+                      <div class="field">
+                        <h1>Địa chỉ</h1>
+                        <div class="control has-icons-left">
+                            <input type="text" placeholder="Lê A" class="input" name="address" required>
+                            <span class="icon is-small is-left">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </span>
+                        </div>
+                      </div>
+                </div>
+
+                <div>
+                    <div class="field" id="timeInput">
+                        <h1>Giờ khám</h1>
+                        <div class="control has-icons-left">
+                            <input type="time" class="input" name="time" required>
+                            <span class="icon is-small is-left">
+                                <i class="fa-regular fa-clock"></i>
+                            </span>
+                        </div>
+                    </div>
+        
+                    <div class="field" id="dateInput">
+                        <h1>Ngày khám</h1>
+                        <div class="control has-icons-left">
+                        <input class="input" type="date" name="date_doctor">
+                            <span class="icon is-small is-left">
+                            <i class="fa-regular fa-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                        <div id="doctor_fields">
+                        </div>
+                </div>
+            </form>
+            <div class="field" style="display: flex; justify-content: flex-end;">
+                <button class="button is-info" id="signupButton">
+                    Đăng ký
+                </button>
+                </div>
+        </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        <strong>Dentist Management by 5 chú hề</strong> by <a href="https://www.facebook.com/nghia.lenguyentrong.7/">5 chú hề</a>.
+      </p>  
+    </div>
+  </footer>
+  <script src="static/datlich.js"></script>
+  <script src="static/jquery-3.7.1.min.js"></script>
+  <script>
+     $(document).ready(function() {
+        $("#nut_home").click(function() {
+          location.replace('/home');
+        })
+    });
+  </script>
+</body>
+
+</html>
