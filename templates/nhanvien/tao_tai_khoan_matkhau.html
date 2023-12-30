@@ -22,23 +22,46 @@
 function validateAndSubmit_pass() {
   // Get the password input element
   var passwordInput = document.getElementById('pass_id1');
-  
+  var sdt = document.getElementById('userInput').value;
+  console.log ("sss" , sdt ,passwordInput )
   // Get the entered password
   var password = passwordInput.value;
   
   // Define your password validation criteria
-  var passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/;
-  
+  registerUser_pass(sdt, password);
   // Check if the password meets the criteria
-  if (passwordRegex.test(password)) {
-    // If valid, you can perform further actions or submit the form
-    alert('Password is valid!');
-    location.reload();
-  } else {
-    // If not valid, prompt the user to input again
-    alert('Please enter a valid password. It must contain at least 8 characters, including at least one letter and one number.');
-    // Clear the password input field
-    passwordInput.value = '';
-  }
+  
+}
+
+
+function registerUser_pass(sdt, password) {
+  console.log (sdt,  password);
+  // Make an AJAX request to your Flask server
+  $.ajax({
+    type: "GET",
+    url: "/tao_tk_mk",  // Update this with the actual route in your Flask app
+    data: {
+      sdt: sdt,
+      password: password
+    },
+    success: function (response) {
+      // Handle the response from the server
+      console.log("Server response:", response);
+      // Show success message in the info modal
+      if (response == 1)
+      {
+        alert("Đăng ký thành công!");
+      }
+      else {
+        alert("Đăng ký thất bại. Vui lòng thử lại sau!");
+      }
+      
+    },
+    error: function (error) {
+      // Show error message in the info modal
+      showInfoModal("Đã xảy ra lỗi. Vui lòng thử lại sau!");
+      console.error("Error:", error);
+    }
+  });
 }
 </script>

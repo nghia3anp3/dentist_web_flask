@@ -4,19 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="...">
-  <!-- Bootstrap JS and dependencies (Popper.js and jQuery) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="..." crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="..." crossorigin="anonymous"></script>
 
   <title>Dentist Register</title>
   <!-- Remove the extra closing tag for the style element -->
 </head>
 <body>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
   {%include "./khachhang/navbar.html" %}
   <div class="container">
     <div class="row">
@@ -24,64 +21,209 @@
 
       <div class="col-6">
 
-        <div class="modal-dialog" role="document" style="margin-top: 50px;">
-        <div class="modal-content rounded-4 shadow">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Mã Hồ Sơ Bệnh Án: 1</li>
-            <li class="list-group-item">Ngày Khám: 15/11/2023</li>
-            <li class="list-group-item">Mã Nha Sĩ : 101</li>
-            <li class="list-group-item">Tên Nha Sĩ: Phan Nguyên Phương</li>
-          </ul>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Mã thuốc</th>
-                <th scope="col">Tên Thuốc</th>
-                <th scope="col">Số Lượng</th>
-                <th scope="col">Đơn giá</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr>
-                <td>114</td>
-                <td>Anti-despression :(( </td>
-                <td>100</td>
-                <th scope="col">15.000</th>
-              </tr>
-            </tbody>
-          </table>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Mã dịch Vụ</th>
-                <th scope="col">Tên dịch vụ</th>
-                <th scope="col">Đơn giá</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr>
-                <th >1</th>
-                <td>X-quang</td>
-                <th>15.000</th>
-              </tr>
-            </tbody>
-          </table>
-
-          <ul class="list-group list-group-flush" class="my-4">
-            <li class="list-group-item">Họ tên nhân viên: Nguyễn Tạ Bảo</li>
-            <li class="list-group-item">Thành tiền: 100.000đ</li>
-
-          </ul>
+        <div class="d-grid gap-2 col-6 mx-auto">
+          <button class="btn btn-primary" type="button" onclick="checkAndShowPopup()"> Xem Hồ Sơ Bệnh Án Của Tôi </button>
         </div>
-        </div>
+        <div id="dropdown" style ="display:none;"></div>
+
       </div>
     </div>
   </div>
 
 
+<script>
+  function checkAndShowPopup() {
+    clearDropdown();
+    sendQueryToDatabase_hskhambenh() ;
+    
+  }
+  function clearDropdown() {
+    // Clear the content of the dropdown element
+    var dropdown = document.getElementById("dropdown");
+    dropdown.innerHTML = "";
+  }
+  function sendQueryToDatabase_hskhambenh() {
+    $.ajax({
+      type: "GET",
+      url: "/query-database-ho-so-kb", // Update this with the actual route in your Flask app
+      data: { userInput: "khachhang" },
+      success: function (data) {
+        // Handle the data received from the server (e.g., update the table)
+        console.log("Data from server:", data["thuoc"]);
+        console.log("Data from server123:", typeof data);
+        if (typeof data["thuoc"] == 'object' && data["thuoc"].length > 0) {
+          // Data exists, update the form with the received data
+          console.log("thuoc", data["thongtin"] , data["thuoc"] , data["dichvu"]);
 
+          for (var i = 0; i < data["thongtin"].length; i++) {
+            console.log ("ssss" , data["thongtin"][i], data["thuoc"][i], data["dichvu"][i])
+            createFormWithData(data["thongtin"][i], data["thuoc"][i], data["dichvu"][i]);
+          }
+          showDropdown();
+        }else {
+          // No data, display the form with the message
+          console.log("ssss");
+          showPopup();
+        }
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        showPopup();
+        hideDropdown();
+      }
+    });
+  }
+  function createFormWithData(thongtin, thuocData, dvData) {
+    // Create a new modal dialog
+    var modalDialog = document.createElement("div");
+    modalDialog.className = "modal-dialog";
+    modalDialog.role = "document";
+    modalDialog.id = "hoadonform";
+
+    // Create modal content
+    var modalContent = document.createElement("div");
+    modalContent.className = "modal-content rounded-4 shadow";
+
+    // Create list group for basic information
+    var listGroup = document.createElement("ul");
+    listGroup.className = "list-group list-group-flush";
+
+    // Create list items for basic information
+    var maHoSoItem = document.createElement("li");
+    maHoSoItem.id = "ma_ho_so";
+    maHoSoItem.className = "list-group-item";
+    maHoSoItem.textContent = "Mã Hồ Sơ Bệnh Án: " + thongtin[0].mahoadon;
+    listGroup.appendChild(maHoSoItem);
+
+    // Create other list items for basic information (ngaykham, id_nhasi, tennhasi)
+    // ...
+
+    var ngaykham = document.createElement("li");
+    ngaykham.id = "ngaykham";
+    ngaykham.className = "list-group-item";
+    ngaykham.textContent = "Ngày khám: " + thongtin[0].ngaykham;
+    listGroup.appendChild(ngaykham);
+
+    var manhasi = document.createElement("li");
+    manhasi.id = "manhasi";
+    manhasi.className = "list-group-item";
+    manhasi.textContent = "Mã nha sĩ: " + thongtin[0].manhasi;
+    listGroup.appendChild(manhasi);
+
+    var tennhasi = document.createElement("li");
+    tennhasi.id = "manhasi";
+    tennhasi.className = "list-group-item";
+    tennhasi.textContent = "Tên nha sĩ: " + thongtin[0].tennhasi;
+    listGroup.appendChild(tennhasi);
+
+    var tongtien = document.createElement("li");
+    tongtien.id = "manhasi";
+    tongtien.className = "list-group-item";
+    tongtien.textContent = "Tổng tiền: " + thongtin[0].tongtien;
+    listGroup.appendChild(tongtien);
+
+    // Append list group to modal content
+    modalContent.appendChild(listGroup);
+
+    // Create tables for thuoc and dv
+    var thuocTable = createTable("table_thuoc", ["Mã thuốc", "Tên Thuốc", "Số Lượng", "Đơn giá"], thuocData);
+    var dvTable = createTable("table_dv", ["Mã Dịch Vụ", "Tên Dịch Vụ", "Số Lượng Dịch Vụ", "Đơn giá"], dvData);
+
+    // Append tables to modal content
+    modalContent.appendChild(thuocTable);
+    modalContent.appendChild(dvTable);
+
+    // Create another list group for additional information
+    var additionalListGroup = document.createElement("ul");
+    additionalListGroup.className = "list-group list-group-flush my-4";
+
+    // Create additional list items (ten_nhan_vien, thanh_tien)
+    // ...
+    var tennhanvien = document.createElement("li");
+    maHoSoItem.id = "tennhanvien";
+    maHoSoItem.className = "list-group-item";
+    maHoSoItem.textContent = "Tên nhân viên: " + " Nguyen Ta Bao";
+    additionalListGroup.appendChild(maHoSoItem);
+
+    // Append additional list group to modal content
+    modalContent.appendChild(additionalListGroup);
+
+    // Append modal content to modal dialog
+    modalDialog.appendChild(modalContent);
+
+ 
+
+    // Append modal dialog to the document body
+    var dropdown = document.getElementById("dropdown");
+    dropdown.appendChild(modalDialog);
+    
+    var horizontalLine = document.createElement("hr");
+
+    // Set the style of the horizontal line
+    horizontalLine.style.border = "none"; // remove default border
+    horizontalLine.style.height = "2px";   // adjust the height as needed
+    horizontalLine.style.backgroundColor = "#ccc";  // set the color as needed
+    
+    // Append the horizontal line element to the dropdown
+    dropdown.appendChild(horizontalLine);
+
+  }
+
+  function createTable(tableId, headers, data) {
+    // Create table element
+    var table = document.createElement("table");
+    table.id = tableId;
+    table.className = "table";
+
+    // Create table header
+    var thead = document.createElement("thead");
+    var headerRow = document.createElement("tr");
+
+    headers.forEach(function (headerText) {
+      var th = document.createElement("th");
+      th.scope = "col";
+      th.textContent = headerText;
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    var tbody = document.createElement("tbody");
+    tbody.className = "table-group-divider";
+
+    if (Array.isArray(data)) {
+      console.log ("ARRAY ROI")
+      data.forEach(function (rowData) {
+        var row = document.createElement("tr");
+        console.log ("row data don gia" , rowData['dongia'] )
+        // Extract values from each object
+        headers.forEach(function (header) {
+          console.log ("ss" ,  rowData[header])
+          var td = document.createElement("td");
+          td.textContent = rowData[header]; // Adjust key names
+          row.appendChild(td);
+        });
+  
+        tbody.appendChild(row);
+      });
+    }
+
+    table.appendChild(tbody);
+
+    return table;
+  }
+
+  function showDropdown() {
+    // You can modify this function to display the popup as needed
+    document.getElementById("dropdown").style.display = "block";
+  }
+  function hideDropdown() {
+    // You can modify this function to display the popup as needed
+    document.getElementById("dropdown").style.display = "none";
+  }
+</script>
 </body>
 </html>
 

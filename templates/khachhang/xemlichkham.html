@@ -4,19 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="...">
-  <!-- Bootstrap JS and dependencies (Popper.js and jQuery) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="..." crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="..." crossorigin="anonymous"></script>
-
   <title>Dentist Register</title>
   <!-- Remove the extra closing tag for the style element -->
 </head>
 <body>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   {%include "./khachhang/navbar.html" %}
   <div class="container">
     <div class="row">
@@ -24,64 +19,101 @@
 
       <div class="col-6">
 
-        <div class="modal-dialog" role="document" style="margin-top: 50px;">
-        <div class="modal-content rounded-4 shadow">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Ngày khám: 1/12/2023</li>
-            <li class="list-group-item">Giờ Khám: 8:00</li>
-            <li class="list-group-item">Mã Nha Sĩ : 101</li>
-            <li class="list-group-item">Tên Nha Sĩ: Phan Nguyên Phương</li>
-          </ul>
-
-          <!-- <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Mã thuốc</th>
-                <th scope="col">Tên Thuốc</th>
-                <th scope="col">Số Lượng</th>
-                <th scope="col">Đơn giá</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr>
-                <td>114</td>
-                <td>Anti-despression :(( </td>
-                <td>100</td>
-                <th scope="col">15.000</th>
-              </tr>
-            </tbody>
-          </table>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Mã dịch Vụ</th>
-                <th scope="col">Tên dịch vụ</th>
-                <th scope="col">Đơn giá</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr>
-                <th >1</th>
-                <td>X-quang</td>
-                <th>15.000</th>
-              </tr>
-            </tbody>
-          </table>
-
-          <ul class="list-group list-group-flush" class="my-4">
-            <li class="list-group-item">Họ tên nhân viên: Nguyễn Tạ Bảo</li>
-            <li class="list-group-item">Thành tiền: 100.000đ</li>
-
-          </ul> -->
+        <div class="d-grid gap-2 col-6 mx-auto">
+          <button class="btn btn-primary" type="button" onclick="checkAndShowPopup()"> Xem Lịch Khám </button>
         </div>
-        </div>
+
+      <div id="popupForm" style="display:none;">
+      </div>
+
+      <div id="dynamicForms"></div>
+
       </div>
     </div>
   </div>
 
 
+  <script>
+    function checkAndShowPopup() {
+      clearDynamicForms();
+      sendQueryToDatabase_lichkham() ;
+    }
+  
+    function sendQueryToDatabase_lichkham() {
+      $.ajax({
+        type: "GET",
+        url: "/query-database-lichkham", // Update this with the actual route in your Flask app
+        data: { userInput: "khachang" },
+        success: function (data) {
+          // Handle the data received from the server (e.g., update the table)
+          console.log("Data from server:", data["ttlichkham"]);
+          console.log("Data from server123:", typeof data);
+          if (typeof data == 'object' && data["ttlichkham"].length > 0) {
+            // Data exists, update the form with the received data
+              console.log("hoa don", data["ttlichkham"]);
+              createDynamicForms(data["ttlichkham"]);
+          } else {
+            // No data, display the form with the message
+            console.log("ssss");
+            alert ("Bạn không có lịch khám nào")
+          }
+        },
+        error: function (error) {
+          showPopup();
+          hideDropdown();
+          console.error("Error:", error);
+        }
+      });
+    }
+  
+    function createDynamicForms(rows) {
+      // Iterate over each row and create a form for each
+      rows.forEach(function (row) {
+        var formHtml = `
+          <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 shadow">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Ngày Khám</th>
+                    <th scope="col">Giờ Khám</th>
+                    <th scope="col">Mã Nha Sĩ Khám</th>
+                    <th scope="col">Tên Nha Sĩ Khám</th>
+                    <th scope="col">Tên Khách Hàng</th>
+                    <th scope="col">Số Điện Thoại</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                  <tr>
+                    <td>${row.a_ngaykham}</td>
+                    <td>${row.b_giokham}</td>
+                    <td>${row.c_manhasi}</td>
+                    <td>${row.d_tennhasi}</td>
+                    <td>${row.e_hoten}</td>
+                    <td>${row.f_sdt }</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+  
+        // Append the formHtml to the dynamicForms div
+        document.getElementById("dynamicForms").innerHTML += formHtml;
+      });
+  
+      // Show the dynamicForms div
+      document.getElementById("dynamicForms").style.display = "block";
+    }
+  
+  
 
+    function clearDynamicForms() {
+      // Clear the content of the dynamicForms div
+      var dynamicForms = document.getElementById("dynamicForms");
+      dynamicForms.innerHTML = "";
+    }
+  
+  </script>
 </body>
 </html>
 
