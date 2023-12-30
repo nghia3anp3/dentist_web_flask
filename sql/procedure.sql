@@ -434,9 +434,9 @@ AS
 	SELECT * FROM LICHBAN WHERE MaNhaSi = @MaNhaSi
 GO
 
--- (NhanVien) THANH TOAN --
-CREATE PROCEDURE sp_ThanhToan 
-	@SDT varchar(20)
+-- (NhanVien) TINH TIEN --
+CREATE PROCEDURE sp_TinhTien
+	@SDT varchar(20), @MaHoSo int 
 AS
 	DECLARE @isSDTExist BIT
 	EXEC @isSDTExist = sp_KiemTraSdtTonTai @SDT
@@ -447,41 +447,35 @@ AS
 		RETURN 0
 	END
 
-	DECLARE @DS_CANTHANHTOAN TABLE(MaHoSo int)
-	INSERT INTO @DS_CANTHANHTOAN
-		SELECT MaHoSo
-		FROM HOSOBENHAN 
-		WHERE SDT = @SDT AND TongTien = 0
-    
-    DECLARE @SL_TT int
-	SELECT @SL_TT = COUNT(*) FROM @DS_CANTHANHTOAN
-
-    IF (@SL_TT = 0)
-	BEGIN
-		print(N'Không có hồ sơ cần thanh toán')
-        RETURN 1
+	IF NOT EXISTS (SELECT * FROM HOSOBENHAN WHERE SDT = @SDT AND MaHoSo = @MaHoSo)
+	BEGIN 
+		RAISERROR(N'Khách hàng không tồn tại hồ sơ có mã %i', 16, 1, @MaHoSo)
+		RETURN 0
 	END
 
-    DECLARE @i int, @MaHoSo int, @TongTienThuoc bigint, @TongTienDV bigint
-    SET @i = 0
-
-    WHILE (@i < @SL_TT)
+	DECLARE @TongTien bigint = (SELECT TongTien FROM HOSOBENHAN WHERE MaHoSo = @MaHoSo)
+    IF (@TongTien <> 0)
 	BEGIN
-        SELECT TOP 1 @MaHoSo = MaHoSo FROM @DS_CANTHANHTOAN
-		SELECT @TongTienThuoc = SUM(DonGia * SoLuong) FROM DONTHUOC WHERE MaDonThuoc = @MaHoSo
-		SELECT @TongTienDV = SUM(DonGia) FROM DONDICHVU WHERE MaDonDV = @MaHoSo
-		-- Thanh toan --
-		UPDATE HOSOBENHAN SET TongTien = @TongTienThuoc + @TongTienDV WHERE MaHoSo = @MaHoSo
-
-        SET @i = @i + 1
-		DELETE @DS_CANTHANHTOAN WHERE MaHoSo = @MaHoSo
+		PRINT N'Hồ sơ đã được tính tiền'
+        RETURN 0
 	END
+
+	DECLARE @TongTienThuoc bigint, @TongTienDV bigint
+	SELECT @TongTienThuoc = SUM(DonGia * SoLuong) FROM DONTHUOC WHERE MaDonThuoc = @MaHoSo
+	SELECT @TongTienDV = SUM(DonGia) FROM DONDICHVU WHERE MaDonDV = @MaHoSo
+
+	-- Thanh toan --
+	UPDATE HOSOBENHAN SET TongTien = @TongTienThuoc + @TongTienDV WHERE MaHoSo = @MaHoSo
 	RETURN 1
 GO
 
--- EXEC sp_ThanhToan '234'
+-- EXEC sp_TinhTien '123', 6
 -- GO
--- EXEC sp_ThanhToan '123'
+-- EXEC sp_TinhTien '123', 1
+-- GO
+-- EXEC sp_TinhTien '123', 8
+-- GO
+-- EXEC sp_TinhTien '094', 8
 -- GO
 
 -- (NhaSi) TAO HO SO BENH AN --
@@ -843,8 +837,8 @@ BEGIN
 				WHERE T.MaThuoc = i.MaThuoc AND T.MaThuoc = d.MaThuoc
 				AND (T.SoLuongTon - i.SoLuong + d.SoLuong) = 0 )
 	BEGIN
-		UPDATE THUOC SET TrangThai = 0 
-		WHERE EXISTS (SELECT * FROM inserted i, THUOC T WHERE i.MaThuoc = T.MaThuoc)
+		DECLARE @MaThuoc char(10) = (SELECT T.MaThuoc FROM inserted i, THUOC T WHERE i.MaThuoc = T.MaThuoc)
+		UPDATE THUOC SET TrangThai = 0 WHERE MaThuoc = @MaThuoc
 		
 		PRINT N'Thuốc tự động xoá vì hết thuốc'
 		RETURN
