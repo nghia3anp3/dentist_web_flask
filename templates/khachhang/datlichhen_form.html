@@ -1,0 +1,116 @@
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+<!-- Add Bootstrap JS and jQuery -->
+<div class="modal modal-sheet position-static d-block bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h1 class="fw-bold mb-0 fs-2">Đặt lịch hẹn tại đây</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-5 pt-0">
+        <form class="">
+          
+          <div class="input-group mb-3">
+            <span class="input-group-text" > Giờ khám </span>
+            <input type="time" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default1" id="inputGroup-sizing-default1" >
+          </div>
+          
+          <div class="input-group mb-3">
+            <span class="input-group-text" > Ngày khám </span>
+            <input type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default2" id="inputGroup-sizing-default2" >
+          </div>
+
+          
+          <!-- drop down doctor -->
+          <div class="form-floating mb-3">
+            <p class="font-monospace mt-4">Chọn bác sĩ để khám</p>
+            <div class="dropdown-center mt-4">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="doctor-dropdown">
+                    Chọn bác sĩ khám
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="doctor-dropdown">
+                    <li><a class="dropdown-item" href="#" data-value="Lê Nguyễn Trọng Nghĩa">Lê Nguyễn Trọng Nghĩa</a></li>
+                    <li><a class="dropdown-item" href="#" data-value="Phan Nguyên Phương">Phan Nguyên Phương</a></li>
+                    <li><a class="dropdown-item" href="#" data-value="Võ Thu Trang">Võ Thu Trang</a></li>
+                  <li><a class="dropdown-item" href="#" data-value="Vũ Minh Thư">Vũ Minh Thư</a></li>
+                </ul>
+            </div>
+          </div>
+          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary mt-4" type="submit">Đặt chỗ</button>
+          <small class="text-body-secondary">Kiểm tra lại thông tin trước khi nhấn</small>
+          <hr class="my-4">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Your existing HTML code -->
+<script>
+    $(document).ready(function () {
+        // Add click event to the dropdown items
+        $('.dropdown-item').on('click', function () {
+            var selectedValue = $(this).data('value');
+            $('#doctor-dropdown').html(selectedValue);
+        });
+
+        // Add submit event to the form
+        $('form').on('submit', function (e) {
+            e.preventDefault(); // Prevents the form from submitting normally
+
+            // Get the input values
+            var selectedTime = $('#inputGroup-sizing-default1').val();
+            var selectedDate = $('#inputGroup-sizing-default2').val();
+            var selectedDoctor = $('#doctor-dropdown').text();
+
+            // Log the values to the console
+            console.log('Selected Time:', selectedTime);
+            console.log('Selected Date:', selectedDate);
+            console.log('Selected Doctor:', selectedDoctor);
+
+            // Set the modal content
+            var modalBodyContent = `
+                <p>Thời gian khám: ${selectedTime}</p>
+                <p>Ngày khám: ${selectedDate}</p>
+                <p>Bác sĩ: ${selectedDoctor}</p>
+            `;
+
+            // Set the modal content
+            $('#bookingModal .modal-body').html(modalBodyContent);
+
+            // Show the modal
+            $('#bookingModal').modal('show');
+        });
+
+        // Add click event to close button in the modal
+        $('#closeModalBtn').on('click', function () {
+            // Close the modal
+            $('#bookingModal').modal('hide');
+          location.reload();
+        });
+    });
+</script>
+
+<!-- Add a Bootstrap modal for displaying the input values -->
+<div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">Đặt lịch hẹn thành công, đây là thông tin lịch hẹn của bạn :</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Display input values here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeModalBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+

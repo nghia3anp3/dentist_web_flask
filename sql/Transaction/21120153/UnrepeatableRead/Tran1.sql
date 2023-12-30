@@ -1,0 +1,4 @@
+USE HQT_CSDL
+GO
+
+EXEC USP_TimThuocBangMa 'T001'
