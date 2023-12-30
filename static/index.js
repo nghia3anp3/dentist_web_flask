@@ -360,7 +360,6 @@ document.getElementById('medicine-delete-button').addEventListener('click',funct
         return response.json();
     })
     .then(data => {
-        // Kiểm tra 'status' trong JSON response từ server
         if (data.status === 'success') {
             alert(data.message); // Hiển thị thông báo thành công
         } else {

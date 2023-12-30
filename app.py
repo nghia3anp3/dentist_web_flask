@@ -1,39 +1,27 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify,session, make_response
 from flask_session import Session
 import pypyodbc as obdc
-<<<<<<< HEAD
 import time
-=======
-##NGHIA NGU
-# DRIVER_NAME = 'SQL SERVER'
-# SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
-# DATABASE_NAME ='HQT_CSDL'
-# connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
-# conn = obdc.connect(connection_string)
->>>>>>> 8125330cb3f29d8db77a0e7ef7ef63958c3abb63
 
 #BAO2MAI
 DRIVER_NAME = 'SQL SERVER'
-SERVER_NAME = 'DESKTOP-S3ESUI2\BAOSERVER'
+SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
 DATABASE_NAME = 'HQT_CSDL'
 
-connection_string = (
-    r'DRIVER={SQL Server};'
-    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-    r'DATABASE=HQT_CSDL;'
-    r'Trusted_Connection=yes;'
-)
-conn = obdc.connect (connection_string)
+# connection_string = (
+#     r'DRIVER={SQL Server};'
+#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+#     r'DATABASE=HQT_CSDL;'
+#     r'Trusted_Connection=yes;'
+# )
+# conn = obdc.connect (connection_string)
+# connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
 
-
-<<<<<<< HEAD
 connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
 conn = obdc.connect(connection_string)
 conn2 = obdc.connect(connection_string)
-=======
->>>>>>> 8125330cb3f29d8db77a0e7ef7ef63958c3abb63
 app = Flask(__name__)
-# app.secret_key = 'nghia1804'
+app.secret_key = 'nghia1804'
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -53,14 +41,13 @@ def login():
     print(conn)
     cursor = conn.cursor()
 
-    #get fetch
     sdt = request.form['username']
     password = request.form['password']
+    
     print (sdt,password)
     #run query
     cursor.execute("{CALL spDang_nhap(?, ?)}", (sdt, password))
     rows = cursor.fetchall()
-<<<<<<< HEAD
     cursor.close()
 
     if (len(rows)>1):
@@ -72,27 +59,17 @@ def login():
     elif rows[0][0] == 'BacSi':
         session['route'] = 'Dentist'
         session['sdt'] = sdt
-        return jsonify({'redirect': '/dentist'})       
-     
-    return jsonify({'warning': 'Tên người dùng hoặc mật khẩu không đúng'})
-=======
-    print(rows[0][0])
-    cursor.close()
-   
-    if rows[0][0]=='Admin':
-        # print("after:" ,session)
-        return jsonify({'redirect': '/admin'})
-    elif rows[0][0] == 'BacSi':
-        # print("after:" ,session)
-        return jsonify({'redirect': '/dentist'})       
+        return jsonify({'redirect': '/dentist'})  
     elif rows[0][0] == 'NhanVien':
-        # print("after:" ,session)
+        # session['route'] = 'NhanVien'
+        session['sdt'] = sdt
         return jsonify({'redirect': '/staff'})
     elif rows[0][0] == 'Khach':
-        print("after:" ,session)
-        return jsonify({'redirect': '/user'})
-    return jsonify({'message': 'Tên người dùng hoặc mật khẩu không đúng'})
->>>>>>> 8125330cb3f29d8db77a0e7ef7ef63958c3abb63
+        # session['route'] = 'Khach'
+        session['sdt'] = sdt
+        return jsonify({'redirect': '/user'})     
+     
+    return jsonify({'warning': 'Tên người dùng hoặc mật khẩu không đúng'})
 
 @app.route('/alert')
 def alert():
@@ -154,7 +131,6 @@ def submit_form():
         cursor.close()
         return jsonify({'status': 'success', 'message': 'Đăng ký thành công'})
     
-<<<<<<< HEAD
 @app.route('/search', methods=['POST'])
 def search():
     data = request.get_json()
@@ -643,12 +619,7 @@ def add_medicine():
         sql_message = e.args[1]
         cursor.rollback()
         return jsonify({"status": 'error', "message": str(sql_message)})
-    
-=======
-    
-    
-    
-    
+       
 # Nhan vien
 @app.route('/staff' , methods=['GET', 'POST'])
 def dat_lich_hen():
@@ -827,6 +798,5 @@ def xemlichkham():
     return render_template('./khachhang/xemlichkham.html')
 
 
->>>>>>> 8125330cb3f29d8db77a0e7ef7ef63958c3abb63
 if __name__ == '__main__':
     app.run(debug=True)
