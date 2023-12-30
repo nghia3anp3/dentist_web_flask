@@ -12,33 +12,33 @@ from datetime import datetime
 # conn = obdc.connect(connection_string)
 
 #BAO2MAI
-DRIVER_NAME = 'SQL SERVER'
-SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
-DATABASE_NAME = 'HQT_CSDL'
+# DRIVER_NAME = 'SQL SERVER'
+# SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
+# DATABASE_NAME = 'HQT_CSDL'
 
-# connection_string = (
-#     r'DRIVER={SQL Server};'
-#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-#     r'DATABASE=HQT_CSDL;'
-#     r'Trusted_Connection=yes;'
-# )
-# conn = obdc.connect (connection_string)
 # connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
-# connection_string = (   
-#     r'DRIVER={SQL Server};'
-#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-#     r'DATABASE=HQT_CSDL;'
-#     r'Trusted_Connection=yes;'
-# )
-# conn = obdc.connect (connection_string)
+# conn = obdc.connect(connection_string)
+# conn2 = obdc.connect(connection_string)
 
 
-connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
-conn = obdc.connect(connection_string)
-conn2 = obdc.connect(connection_string)
+connection_string = (
+    r'DRIVER={SQL Server};'
+    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+    r'DATABASE=HQT_CSDL;'
+    r'Trusted_Connection=yes;'
+)
+conn = obdc.connect (connection_string)
+connection_string = (   
+    r'DRIVER={SQL Server};'
+    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+    r'DATABASE=HQT_CSDL;'
+    r'Trusted_Connection=yes;'
+)
+conn = obdc.connect (connection_string)
+
+
 app = Flask(__name__)
-app.secret_key = 'nghia1804'
-
+# app.secret_key = 'nghia1804'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
