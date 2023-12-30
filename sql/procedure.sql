@@ -832,10 +832,14 @@ BEGIN
 		RETURN
 	END
 
+	DECLARE @SL_deleted int = (SELECT SoLuong FROM deleted)
+	IF @SL_deleted IS NULL
+		SET @SL_deleted = 0
+
 	IF EXISTS ( SELECT *
-				FROM inserted i, deleted d, THUOC T
-				WHERE T.MaThuoc = i.MaThuoc AND T.MaThuoc = d.MaThuoc
-				AND (T.SoLuongTon - i.SoLuong + d.SoLuong) = 0 )
+				FROM inserted i, THUOC T
+				WHERE T.MaThuoc = i.MaThuoc
+				AND (T.SoLuongTon - i.SoLuong + @SL_deleted) = 0 )
 	BEGIN
 		DECLARE @MaThuoc char(10) = (SELECT T.MaThuoc FROM inserted i, THUOC T WHERE i.MaThuoc = T.MaThuoc)
 		UPDATE THUOC SET TrangThai = 0 WHERE MaThuoc = @MaThuoc
@@ -845,9 +849,9 @@ BEGIN
 	END
 
 	IF NOT EXISTS ( SELECT *
-					FROM inserted i, deleted d, THUOC T
-					WHERE T.MaThuoc = i.MaThuoc AND T.MaThuoc = d.MaThuoc
-					AND (T.SoLuongTon - i.SoLuong + d.SoLuong) > 0 )
+					FROM inserted i, THUOC T
+					WHERE T.MaThuoc = i.MaThuoc
+					AND (T.SoLuongTon - i.SoLuong + @SL_deleted) > 0 )
 	BEGIN
 		RAISERROR (N'Số lượng tồn của thuốc không đáp ứng được việc thêm/sửa số lượng thuốc trong đơn thuốc', 16, 1)
 		ROLLBACK
@@ -858,7 +862,6 @@ GO
 -- INSERT INTO DONTHUOC VALUES (3, 'T002', 10, 2000)
 -- UPDATE DONTHUOC SET SoLuong = 106 WHERE MaDonThuoc = 1 AND MaThuoc = 'T001'
 -- UPDATE DONTHUOC SET SoLuong = 105 WHERE MaDonThuoc = 1 AND MaThuoc = 'T001'
--- UPDATE DONTHUOC SET SoLuong = 20 WHERE MaDonThuoc = 1 AND MaThuoc = 'T002'
 
 -- R5 + R6:
 ----- INSERT LICHHEN (ThoiGianHen)
