@@ -649,9 +649,9 @@ def add_medicine():
 def dat_lich_hen():
   return render_template('./nhanvien/dat_lich_hen.html' )
 
-@app.route('/xuat_hoa_don', methods=['GET', 'POST'])
+@app.route('/thanh_toan_hoa_don', methods=['GET', 'POST'])
 def xuat_hoa_don():
-    return render_template('./nhanvien/xuat_hoa_don.html')
+    return render_template('./nhanvien/thanh_toan_hoa_don.html')
 
 @app.route('/query-database-xuat_hoa_don', methods=['GET'])
 def query_database_xuathoadon():
@@ -664,65 +664,73 @@ def query_database_xuathoadon():
         cursor = conn.cursor ()
         cursor.execute("{CALL Get_bill_info_from_SDT(?)}", (user_input,))
         thongtin = cursor.fetchall()
-        print ("hehehe" , thongtin)
-        cursor.nextset()
-        thuoc = cursor.fetchall()
-        cursor.nextset()
-        dichvu = cursor.fetchall()
-        
-        print ("hehe" ,thongtin , thuoc, dichvu)
-        # Commit the transaction
-        conn.commit()
-        # Close the connection
-        cursor.close()
-        hoa_don_list = []
-        for hoa_don in thongtin :
-            tongtien = hoa_don[4]
-            print ('tongtien' , type (tongtien) )
-            if tongtien == 0 :
-                ## append hoa don id vao
-                hoa_don_list.append (hoa_don[0])
-        if len (hoa_don_list) == 0 :
+        if thongtin[0] == (0,) :
             return jsonify (0)
         else :
-            # Chi lum thong tin cua nhung hoa don chua thanh toan
-            thongtin = [{"mahoadon" : thongtin[i][0],
-                        "ngaykham":thongtin[i][1],
-                        "manhasi": thongtin[i][2],
-                        "tennhasi": thongtin[i][3],
-                        "tongtien":thongtin[i][4]
-                        } for i in range (len(thongtin)) if thongtin[i][0] in hoa_don_list]
-            thuoc = [{"mahoadonthuoc" : thuoc[i][0],
-                "Mã thuốc" : thuoc[i][1],
-                        "Tên Thuốc":thuoc[i][2],
-                        "Số Lượng": thuoc[i][3],
-                        "Đơn giá": thuoc[i][4],
-                        } for i in range (len(thuoc)) if thuoc[i][0] in hoa_don_list]
-
-            dichvu = [{"mahoadondichvu": dichvu[i][0],
-                "Mã Dịch Vụ" : dichvu[i][1],
-                        "Tên Dịch Vụ":dichvu[i][2],
-                        "Đơn giá": dichvu[i][3],
-                        "Số Lượng Dịch Vụ": 1,
-                        } for i in range (len(dichvu)) if dichvu[i][0] in hoa_don_list ] 
-            print ("huhu" , thongtin , thuoc, dichvu)
-            thuoctheohd = []
-            dichvutheohd = []
-            mahd = thongtin[0]["mahoadon"]
-            for th in thuoc :
-                if th["mahoadonthuoc"] == mahd :
-                    thuoctheohd.append (th)
-            for dv in dichvu :
-                if dv["mahoadondichvu"] == mahd :
-                    dichvutheohd.append (dv)
-                    
-                
-            print ("sdsadsa" , thongtin[0] , thuoctheohd , dichvutheohd)
+            cursor.nextset()
+            thuoc = cursor.fetchall()
+            cursor.nextset()
+            dichvu = cursor.fetchall()
             
-            return jsonify({"thongtin" : [thongtin[0]] ,
-                            "thuoc": thuoctheohd ,
-                            "dichvu":dichvutheohd
-                            })
+            print ("hehe" ,thongtin , thuoc, dichvu)
+            # Commit the transaction
+            conn.commit()
+            # Close the connection
+            cursor.close()
+            ma_hoa_don_list = []
+            for hoa_don in thongtin :
+                tongtien = hoa_don[4]
+                if tongtien == 0 :
+                    ## append hoa don id vao
+                    ma_hoa_don_list.append (hoa_don[0])
+                    
+            if len (ma_hoa_don_list) == 0 :
+                return jsonify (0)
+            else :
+                # Chi lum thong tin cua nhung hoa don chua thanh toan
+                thongtin = [{"mahoadon" : thongtin[i][0],
+                            "ngaykham":thongtin[i][1],
+                            "manhasi": thongtin[i][2],
+                            "tennhasi": thongtin[i][3],
+                            "tongtien":thongtin[i][4]
+                            } for i in range (len(thongtin)) if thongtin[i][0] in ma_hoa_don_list]
+                thuoc = [{"mahoadonthuoc" : thuoc[i][0],
+                    "Mã thuốc" : thuoc[i][1],
+                            "Tên Thuốc":thuoc[i][2],
+                            "Số Lượng": thuoc[i][3],
+                            "Đơn giá": thuoc[i][4],
+                            } for i in range (len(thuoc)) if thuoc[i][0] in ma_hoa_don_list]
+
+                dichvu = [{"mahoadondichvu": dichvu[i][0],
+                    "Mã Dịch Vụ" : dichvu[i][1],
+                            "Tên Dịch Vụ":dichvu[i][2],
+                            "Đơn giá": dichvu[i][3],
+                            "Số Lượng": 1,
+                            } for i in range (len(dichvu)) if dichvu[i][0] in ma_hoa_don_list ] 
+                print ("huhu" , thongtin , thuoc, dichvu)
+                thuoctheohd_list = []
+                dichvutheohd_list = []
+                for i in range (len (thongtin) ) :
+                    thuoctheohd = []
+                    dichvutheohd = []
+                    mahd = thongtin[i]["mahoadon"]
+                    for th in thuoc :
+                        if th["mahoadonthuoc"] == mahd :
+                            thuoctheohd.append (th)
+                    for dv in dichvu :
+                        if dv["mahoadondichvu"] == mahd :
+                            dichvutheohd.append (dv)
+                            
+                    thuoctheohd_list.append (thuoctheohd)
+                    dichvutheohd_list.append (dichvutheohd)
+                    
+                print ("sdsadsa" , thuoctheohd_list , dichvutheohd_list)
+                thongtinlist = [[thongtindic] for thongtindic in thongtin]
+                print ("hihdishdis" ,thongtinlist) 
+                return jsonify({"thongtin" : thongtinlist ,
+                                "thuoc": thuoctheohd_list ,
+                                "dichvu":dichvutheohd_list
+                                })
     except Exception as e:
         # Catch any exceptions and return an error message
         print(f"Error: {str(e)}")
@@ -740,74 +748,100 @@ def query_database_ho_so_kb():
         # Replace the following line with the actual result from your database query
         cursor = conn.cursor ()
         cursor.execute("{CALL Get_bill_info_from_SDT(?)}", (user_input,))
-        
         thongtin = cursor.fetchall()
-        cursor.nextset()
-        thuoc = cursor.fetchall()
-        cursor.nextset()
-        dichvu = cursor.fetchall()
-        
-        print (thongtin , thuoc, dichvu)
-        # Commit the transaction
-        conn.commit()
-        # Close the connection
-        cursor.close()
-        if len (thongtin) == 0 :
+        if thongtin[0] == (0,) :
             return jsonify (0)
         else :
-            thongtin = [{"mahoadon" : thongtin[i][0],
-                        "ngaykham":thongtin[i][1],
-                        "manhasi": thongtin[i][2],
-                        "tennhasi": thongtin[i][3],
-                        "tongtien":thongtin[i][4]
-                        } for i in range (len(thongtin))]
-            thuoc = [{  "mahoadonthuoc" : thuoc[i][0],                        
-                      "Mã thuốc" : thuoc[i][1].strip (),
-                        "Tên Thuốc":thuoc[i][2].strip (),
-                        "Số Lượng": thuoc[i][3],
-                        "Đơn giá": thuoc[i][4],
-                        } for i in range (len(thuoc))]
-                    
-            dichvu = [{ "mahoadondichvu" : dichvu[i][0],
-                        "Mã Dịch Vụ" : dichvu[i][1].strip (),
-                        "Tên Dịch Vụ":dichvu[i][2],
-                        "Đơn giá": dichvu[i][3],
-                        "Số Lượng Dịch Vụ": 1,
-                        } for i in range (len(dichvu))]
+            cursor.nextset()
+            thuoc = cursor.fetchall()
+            cursor.nextset()
+            dichvu = cursor.fetchall()
             
-            thuoctheohd_list = []
-            dichvutheohd_list = []
-            thongtin_list = []
-            for i in range (len (thongtin) ) :
-                thuoctheohd = []
-                dichvutheohd = []
-                mahd = thongtin[i]["mahoadon"]
-                for th in thuoc :
-                    if th["mahoadonthuoc"] == mahd :
-                        thuoctheohd.append (th)
-                for dv in dichvu :
-                    if dv["mahoadondichvu"] == mahd :
-                        dichvutheohd.append (dv)
+            print (thongtin , thuoc, dichvu)
+            # Commit the transaction
+            conn.commit()
+            # Close the connection
+            cursor.close()
+            if len (thongtin) == 0 :
+                return jsonify (0)
+            else :
+                thongtin = [{"mahoadon" : thongtin[i][0],
+                            "ngaykham":thongtin[i][1],
+                            "manhasi": thongtin[i][2],
+                            "tennhasi": thongtin[i][3],
+                            "tongtien":thongtin[i][4]
+                            } for i in range (len(thongtin))]
+                thuoc = [{  "mahoadonthuoc" : thuoc[i][0],                        
+                        "Mã thuốc" : thuoc[i][1].strip (),
+                            "Tên Thuốc":thuoc[i][2].strip (),
+                            "Số Lượng": thuoc[i][3],
+                            "Đơn giá": thuoc[i][4],
+                            } for i in range (len(thuoc))]
                         
-                thuoctheohd_list.append (thuoctheohd)
-                dichvutheohd_list.append (dichvutheohd)
+                dichvu = [{ "mahoadondichvu" : dichvu[i][0],
+                            "Mã Dịch Vụ" : dichvu[i][1].strip (),
+                            "Tên Dịch Vụ":dichvu[i][2],
+                            "Đơn giá": dichvu[i][3],
+                            "Số Lượng Dịch Vụ": 1,
+                            } for i in range (len(dichvu))]
                 
-            print ("sdsadsa" , thuoctheohd_list , dichvutheohd_list)
-            thongtinlist = [[thongtindic] for thongtindic in thongtin]
-            print ("hihdishdis" ,thongtinlist) 
-            return jsonify({"thongtin" : thongtinlist ,
-                            "thuoc": thuoctheohd_list ,
-                            "dichvu":dichvutheohd_list
-                            })
+                thuoctheohd_list = []
+                dichvutheohd_list = []
+                thongtin_list = []
+                for i in range (len (thongtin) ) :
+                    thuoctheohd = []
+                    dichvutheohd = []
+                    mahd = thongtin[i]["mahoadon"]
+                    for th in thuoc :
+                        if th["mahoadonthuoc"] == mahd :
+                            thuoctheohd.append (th)
+                    for dv in dichvu :
+                        if dv["mahoadondichvu"] == mahd :
+                            dichvutheohd.append (dv)
+                            
+                    thuoctheohd_list.append (thuoctheohd)
+                    dichvutheohd_list.append (dichvutheohd)
+                    
+                print ("sdsadsa" , thuoctheohd_list , dichvutheohd_list)
+                thongtinlist = [[thongtindic] for thongtindic in thongtin]
+                print ("hihdishdis" ,thongtinlist) 
+                return jsonify({"thongtin" : thongtinlist ,
+                                "thuoc": thuoctheohd_list ,
+                                "dichvu":dichvutheohd_list
+                                })
     except Exception as e:
         # Catch any exceptions and return an error message
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-    
-    
-    
 
+@app.route('/query_thanh_toan', methods=['GET'])
+def query_thanh_toan():
+    sdt = request.args.get('userInput')
+    mahoadon = request.args.get('mahoadon')
+    # Perform your database query here using the provided user_input
+
+    # Replace the following line with the actual result from your database query
+    cursor = conn.cursor ()
+    query = """
+    SET NOCOUNT ON;
+    DECLARE @RESULT INT
+    EXEC @RESULT = sp_TinhTien '{}', '{}'
+    SELECT @RESULT AS COL
+    """.format (sdt , mahoadon)
+    cursor.execute(query)
     
+    rows = cursor.fetchone()[0]
+     # Commit the transaction
+    conn.commit()
+
+    # Close the connection
+    cursor.close()
+    print ("rows: " , rows)
+    if rows == 1 :
+        return jsonify (1)  
+    else :
+        # print (result_from_database)
+        return jsonify(0)
 @app.route('/query-database-dat-lich-hen', methods=['GET'])
 def query_database_datlichhen():
     user_input = request.args.get('userInput')
@@ -834,7 +868,7 @@ def query_database_datlichhen():
                                 }
         # print (result_from_database)
         return jsonify(result_from_database)
-    
+
 @app.route('/get_available_doctors', methods=['GET'])
 def get_available_doctors():
     # Retrieve the selected time and date from the request

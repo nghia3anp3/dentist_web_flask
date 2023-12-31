@@ -932,7 +932,7 @@ BEGIN
 	END
 END;
 GO
-exec Get_bill_info_from_SDT @SDT= "123"
+exec Get_bill_info_from_SDT @SDT= "567"
 GO
 
 CREATE PROCEDURE Dang_nhap
@@ -960,3 +960,5 @@ BEGIN
 END
 GO
 EXEC Dang_nhap @SDT='20',@MatKhau='thu'
+
+SELECT * FROM HOSOBENHAN
