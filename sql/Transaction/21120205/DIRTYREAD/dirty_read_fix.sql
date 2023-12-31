@@ -17,14 +17,14 @@ BEGIN TRAN
 
 		DECLARE @SoLuongTon int
 		SELECT @SoLuongTon = SoLuongTon FROM THUOC WHERE MaThuoc = @MaThuoc
-		IF (@SoLuongTon -  @LuongThuocThayDoi < 0 )
+		IF ( @LuongThuocThayDoi > @SoLuongTon)
 		BEGIN
 			PRINT N'VUOT QUA SO LUONG THUOC CON LAI CO TRONG KHO'
 			ROLLBACK TRAN
 			RETURN 1
 		END
 
-		UPDATE THUOC SET  SoLuongTon = @SoLuongTon -  @LuongThuocThayDoi  WHERE  MaThuoc = @MaThuoc
+		UPDATE THUOC SET  SoLuongTon =@LuongThuocThayDoi  WHERE  MaThuoc = @MaThuoc
 		--ĐỂ TEST
 		WAITFOR DELAY '0:0:05'
 		ROLLBACK TRAN 
@@ -43,10 +43,9 @@ RETURN 0
 
 GO
 
-CREATE OR ALTER PROC usp_nhasitaodonthuoc
-	@MaHoSo int, @TenThuoc char(30), @SoLuong int , @THUOCCONLAI INT OUT
+CREATE OR ALTER PROC USP_TaoDonThuoc
+	@MaHoSo int, @TenThuoc char(30), @SoLuong int 
 AS
---SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
 	BEGIN TRY
 		
@@ -72,7 +71,14 @@ BEGIN TRAN
 		DECLARE @MaThuoc char(10), @DonGia int
 		SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
 
-
+		DECLARE @THUOCCONLAI INT
 		SET @THUOCCONLAI = @SoLuongTon - @SoLuong
-
-	END TRY	BEGIN CATCH		PRINT N'LỖI HỆ THỐNG'		ROLLBACK TRAN	END CATCHCOMMIT TRANRETURN 0
+		
+	END TRY
+	BEGIN CATCH
+		PRINT N'LỖI HỆ THỐNG'
+		ROLLBACK TRAN
+		RETURN 1
+	END CATCH
+COMMIT TRAN
+RETURN @THUOCCONLAI

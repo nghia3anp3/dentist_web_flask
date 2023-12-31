@@ -1,7 +1,8 @@
 ﻿USE HQT_CSDL
 GO
 
-DECLARE @RT FLOAT
-EXEC usp_nhasitaodonthuoc 7 , 'Paracetamol' , 6 , @RT OUT
-
+DECLARE @RT INT
+EXEC @RT = USP_TaoDonThuoc 7 , 'Panadol' , 10 
 PRINT N'SỐ Lượng thuốc còn lại ' + CAST(@RT AS VARCHAR(20))
+
+

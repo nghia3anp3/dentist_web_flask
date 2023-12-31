@@ -35,6 +35,7 @@ connection_string = (
     r'Trusted_Connection=yes;'
 )
 conn = obdc.connect (connection_string)
+conn2 = obdc.connect(connection_string)
 
 
 app = Flask(__name__)
@@ -77,10 +78,12 @@ def login():
         # print("after:" ,session)
         session['route'] = 'Admin'
         session['sdt'] = sdt
+        print ('vo ad min')
         return jsonify({'redirect': '/admin'})
     elif rows[0][0] == 'BacSi':
         session['route'] = 'Dentist'
         session['sdt'] = sdt
+        print ('vo bacsi')
         return jsonify({'redirect': '/dentist'})  
     elif rows[0][0] == 'NhanVien':
         # session['route'] = 'NhanVien'
@@ -312,9 +315,22 @@ def edit_medicine():
 
     try:
         cursor = conn.cursor()
-        cursor.execute("UPDATE THUOC SET TenThuoc = ?, DonGia = ?, ChiDinh = ?, SoLuongTon = ?, NgayHetHan = ?  WHERE MaThuoc = ?", (tenthuoc,dongiathuoc,chidinhthuoc,soluongton,ngayhethan,mathuoc))
+        # cursor.execute("UPDATE THUOC SET TenThuoc = ?, DonGia = ?, ChiDinh = ?, SoLuongTon = ?, NgayHetHan = ?  WHERE MaThuoc = ?", (tenthuoc,dongiathuoc,chidinhthuoc,soluongton,ngayhethan,mathuoc))
+        query = """
+        SET NOCOUNT ON;
+        DECLARE @RT INT
+        EXEC @RT =	USP_qtvupdatethuoc '{}' , {}
+        SELECT @RT AS COL
+        """.format (mathuoc , int (soluongton) )
+        cursor.execute (query)
+        return_value = cursor.fetchone () [0]
+        
+        print ("dsa" , return_value)
         conn.commit()
         cursor.close()
+        if (return_value == 1 ) :
+            error_message = "Lỗi không xác định, đang tiến hành rollback"
+            return jsonify({'status': 'success', 'message': error_message})
         return jsonify({'status': 'success', 'message': 'Cập nhật thành công'})
     except Exception as e:
         error_message = f"Lỗi khi cập nhật dòng: {str(e)}"
@@ -379,12 +395,14 @@ def add_patient_file():
 
     cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
     after_code = cursor.fetchone()
-
+    print ("DONE SUCCESS" , )
+    soluongthuoc_conlai = -1 
     if (original_code==after_code):
         return jsonify({'status': 'error', 'message': "Lỗi SĐT!"})
     
     if len(tenthuoc)>0:
         for i in range(len(tenthuoc)):
+            print ("ccc" , after_code[0],tenthuoc[i],soluongthuoc[i])
             query = """
                 SET NOCOUNT ON;
                 DECLARE @RESULT INT
@@ -394,7 +412,7 @@ def add_patient_file():
 
             cursor.execute(query)
             res = cursor.fetchone()[0]
-
+            soluongthuoc_conlai = res 
             if res=='0':
                 return jsonify({'status': 'error', 'message': "Lỗi thêm thuốc!"})
             
@@ -417,7 +435,7 @@ def add_patient_file():
     cursor.commit()
     cursor.close()
             
-    return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!"})
+    return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!" , "thuoc_con" : soluongthuoc_conlai})
 
 
 @app.route('/get_date', methods=['GET'])
