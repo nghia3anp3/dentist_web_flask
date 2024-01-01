@@ -127,11 +127,7 @@
       tennhasi.textContent = "Tên nha sĩ: " + thongtin[0].tennhasi;
       listGroup.appendChild(tennhasi);
 
-      var tongtien = document.createElement("li");
-      tongtien.id = "manhasi";
-      tongtien.className = "list-group-item";
-      tongtien.textContent = "Tổng tiền: " + thongtin[0].tongtien;
-      listGroup.appendChild(tongtien);
+      
   
       // Append list group to modal content
       modalContent.appendChild(listGroup);
@@ -150,11 +146,13 @@
   
       // Create additional list items (ten_nhan_vien, thanh_tien)
       // ...
-      var tennhanvien = document.createElement("li");
-      maHoSoItem.id = "tennhanvien";
-      maHoSoItem.className = "list-group-item";
-      maHoSoItem.textContent = "Tên nhân viên: " + " Nguyen Ta Bao";
-      additionalListGroup.appendChild(maHoSoItem);
+      
+      var tongtien = document.createElement("li");
+      tongtien.id = "tongtien";
+      tongtien.className = "list-group-item";
+      tongtien.textContent = "Tổng tiền: " + thongtin[0].tongtien;
+      additionalListGroup.appendChild(tongtien);
+
 
       // Append additional list group to modal content
       modalContent.appendChild(additionalListGroup);
