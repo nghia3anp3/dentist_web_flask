@@ -4,13 +4,13 @@ from flask_session import Session
 import pypyodbc as obdc
 
 from datetime import datetime
-##NGHIA NGU
-# DRIVER_NAME = 'SQL SERVER'
-# SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
-# DATABASE_NAME ='HQT_CSDL'
-# connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
-# conn = obdc.connect(connection_string)
-
+#NGHIA NGU
+DRIVER_NAME = 'SQL SERVER'
+SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
+DATABASE_NAME ='HQT_CSDL'
+connection_string = f'DRIVER={DRIVER_NAME};SERVER={SERVER_NAME};DATABASE={DATABASE_NAME}'
+conn = obdc.connect(connection_string)
+conn2 = obdc.connect(connection_string)
 #BAO2MAI
 # DRIVER_NAME = 'SQL SERVER'
 # SERVER_NAME = 'TRONG-NGHIA\MSSQLSERVER01'
@@ -21,20 +21,20 @@ from datetime import datetime
 # conn2 = obdc.connect(connection_string)
 
 
-connection_string = (
-    r'DRIVER={SQL Server};'
-    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-    r'DATABASE=HQT_CSDL;'
-    r'Trusted_Connection=yes;'
-)
-conn = obdc.connect (connection_string)
-connection_string = (   
-    r'DRIVER={SQL Server};'
-    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-    r'DATABASE=HQT_CSDL;'
-    r'Trusted_Connection=yes;'
-)
-conn = obdc.connect (connection_string)
+# connection_string = (
+#     r'DRIVER={SQL Server};'
+#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+#     r'DATABASE=HQT_CSDL;'
+#     r'Trusted_Connection=yes;'
+# )
+# conn = obdc.connect (connection_string)
+# connection_string = (   
+#     r'DRIVER={SQL Server};'
+#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+#     r'DATABASE=HQT_CSDL;'
+#     r'Trusted_Connection=yes;'
+# )
+# conn = obdc.connect (connection_string)
 
 
 app = Flask(__name__)
@@ -62,7 +62,7 @@ def login():
     
     print (sdt,password)
     #run query
-    cursor.execute("{CALL spDang_nhap(?, ?)}", (sdt, password))
+    cursor.execute("{CALL Dang_nhap(?, ?)}", (sdt, password))
     rows = cursor.fetchall()
     cursor.close()
     session['sdt'] = sdt
@@ -326,12 +326,12 @@ def delete_medicine():
     query = """
         SET NOCOUNT ON;
         DECLARE @RESULT INT;
-        EXEC @RESULT = sp_XoaThuoc ?;
+        EXEC @RESULT = USP_XoaThuoc ?;
         SELECT @RESULT AS COL;
     """
 
     try:
-        cursor = conn.cursor()
+        cursor = conn2.cursor()
         cursor.execute(query, (mathuoc,))
         res = cursor.fetchall()[0]
         print(res[0])
@@ -369,51 +369,57 @@ def add_patient_file():
     soluongthuoc = data['soluongthuoc']
     selectedOption = data['selectedOption']
 
-    cursor = conn2.cursor()
-    cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
-    original_code = cursor.fetchone()
+    try:
+        cursor = conn2.cursor()
+        cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
+        original_code = cursor.fetchone()
 
-    cursor.execute("{CALL sp_TaoHoSoBenhAn (?,?)}", (sdt,manhasi))
+        cursor.execute("{CALL sp_TaoHoSoBenhAn (?,?)}", (sdt,manhasi))
 
-    cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
-    after_code = cursor.fetchone()
+        cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
+        after_code = cursor.fetchone()
 
-    if (original_code==after_code):
-        return jsonify({'status': 'error', 'message': "Lỗi SĐT!"})
-    
-    if len(tenthuoc)>0:
-        for i in range(len(tenthuoc)):
-            query = """
-                SET NOCOUNT ON;
-                DECLARE @RESULT INT
-                EXEC @RESULT = USP_TaoDonThuoc '{}','{}', '{}'
-                SELECT @RESULT AS COL
-            """.format(after_code[0],tenthuoc[i],soluongthuoc[i])
+        if (original_code==after_code):
+            return jsonify({'status': 'error', 'message': "Lỗi SĐT!"})
+        
+        if len(tenthuoc)>0:
+            for i in range(len(tenthuoc)):
+                query = """
+                    SET NOCOUNT ON;
+                    DECLARE @RESULT INT
+                    EXEC @RESULT = USP_TaoDonThuoc ?,?, ?
+                    SELECT @RESULT AS COL
+                """
 
-            cursor.execute(query)
-            res = cursor.fetchone()[0]
+                cursor.execute(query, ((after_code[0],tenthuoc[i],soluongthuoc[i])))
 
-            if res=='0':
-                return jsonify({'status': 'error', 'message': "Lỗi thêm thuốc!"})
-            
-    if len(selectedOption)>0:
-        for item in selectedOption:
-            print(item)
-            query = """
-                SET NOCOUNT ON;
-                DECLARE @RESULT INT
-                EXEC @RESULT = sp_TaoDonDV '{}', N'{}'
-                SELECT @RESULT AS COL
-            """.format(after_code[0],item)
-            
-            cursor.execute(query)
-            res = cursor.fetchone()[0]
-            print("them dich vu: ",res)
-            if res=='0':
-                return jsonify({'status': 'error', 'message': "Lỗi thêm dịch vụ!"})
-            
-    cursor.commit()
-    cursor.close()
+                res = cursor.fetchall()[0]
+
+                print("Day la resss: ", res)
+
+                if res[0]=='0':
+                    return jsonify({'status': 'error', 'message': "Lỗi thêm thuốc!"})
+                
+        if len(selectedOption)>0:
+            for item in selectedOption:
+                print(item)
+                query = """
+                    SET NOCOUNT ON;
+                    DECLARE @RESULT INT
+                    EXEC @RESULT = sp_TaoDonDV '{}', N'{}'
+                    SELECT @RESULT AS COL
+                """.format(after_code[0],item)
+                
+                cursor.execute(query)
+                res = cursor.fetchone()[0]
+                print("them dich vu: ",res)
+                if res=='0':
+                    return jsonify({'status': 'error', 'message': "Lỗi thêm dịch vụ!"})
+                
+        cursor.commit()
+        cursor.close()
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
             
     return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!"})
 
@@ -474,32 +480,36 @@ def get_fix_form():
     ma_ho_so = data.get('mahoso')
     ten_thuoc = data.get('tenthuoc')
     so_luong = data.get('soluong')
-    cursor = conn.cursor()
 
-    query = """
-        SET NOCOUNT ON;
-        DECLARE @RESULT INT;
-        EXEC @RESULT = USP_SuaSoLuongThuoc_DonThuoc ?, ?, ?;
-        SELECT @RESULT AS COL;
-    """
-    
-    cursor.execute(query, (ma_ho_so, ten_thuoc, so_luong))
+    try:
+        cursor = conn.cursor()
+
+        query = """
+            SET NOCOUNT ON;
+            DECLARE @RESULT INT;
+            EXEC @RESULT = USP_SuaSoLuongThuoc_DonThuoc ?, ?, ?;
+            SELECT @RESULT AS COL;
+        """
         
-    # except obdc.Error as e:
-    #     sql_message = e.args[1]
-    #     print(sql_message)
-    #     if sql_message == '[HY000] [Microsoft][ODBC SQL Server Driver]Connection is busy with results for another hstmt':
-    #         time.sleep(5)
-    #         cursor.execute(query, (ma_ho_so, ten_thuoc, so_luong))
-    res = cursor.fetchall()[0]
-    print(res[0])
-    if res[0]==1:
-        cursor.commit()
-        return jsonify({"status":'success',"message": 'Đã sửa số lượng thuốc trong đơn!'})
-    else:
-        print("that bai")
-        cursor.rollback()
-        return jsonify({"status": 'error', "message": 'Đã xảy ra lỗi, dữ liệu đã được rollback, vui lòng thử lại!'})
+        cursor.execute(query, (ma_ho_so, ten_thuoc, so_luong))
+            
+        # except obdc.Error as e:
+        #     sql_message = e.args[1]
+        #     print(sql_message)
+        #     if sql_message == '[HY000] [Microsoft][ODBC SQL Server Driver]Connection is busy with results for another hstmt':
+        #         time.sleep(5)
+        #         cursor.execute(query, (ma_ho_so, ten_thuoc, so_luong))
+        res = cursor.fetchall()[0]
+        print(res[0])
+        if res[0]==1:
+            cursor.commit()
+            return jsonify({"status":'success',"message": 'Đã sửa số lượng thuốc trong đơn!'})
+        else:
+            print("that bai")
+            cursor.rollback()
+            return jsonify({"status": 'error', "message": 'Đã xảy ra lỗi, dữ liệu đã được rollback, vui lòng thử lại!'})
+    except obdc.Error as e:
+        return jsonify({"status": 'error', "message": 'Lỗi database!'})
 
 
 @app.route('/get_busy_scheduel', methods=['GET'])
@@ -1219,6 +1229,40 @@ def xemhsbenhan():
 def xemlichkham():
     return render_template('./khachhang/xemlichkham.html')
 
+@app.route('/Trang_procedure', methods=['POST'])
+def Trang_procedure():  
+    data = request.json
+    print(data)
+    query = "Exec USP_TimThuocBangMa ?"
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query,(data['mathuoc'], ))
+
+        result = cursor.fetchall()
+        
+        thuoc = []
+
+        if len(result)>0:
+            for row in result:
+                tenthuoc = row[1].strip()
+                dongia = row[2]
+                chidinh = row[3]
+                soluongton = row[4]
+                ngayhethan = row[5]
+
+            thuoc.append({
+                "tenthuoc": tenthuoc,
+                "dongia": dongia,
+                "chidinh": chidinh,   
+                "soluongton": soluongton,
+                "ngayhethan": ngayhethan
+            })
+            return jsonify({'status': 'success', 'data': thuoc})
+        else:
+            return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
+    
+    except obdc.Error as ex:
+        return jsonify({'status': 'error', 'message': str(ex)})
 
 if __name__ == '__main__':
     app.run(debug=True)

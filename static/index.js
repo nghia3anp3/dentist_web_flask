@@ -13,33 +13,46 @@ function hideAll() {
 }
 
 function edit(element) {
-    // Lấy dòng chứa nút đã được click
     const row = element.closest('tr');
-
-    // Lấy các ô dữ liệu từ dòng đã chọn
     const cells = row.querySelectorAll('td');
-
-    // Lấy các giá trị từ các ô dữ liệu
     const mathuoc = cells[0].innerText;
-    const tenthuoc = cells[1].innerText;
-    const dongia = cells[2].innerText;
-    const chidinh = cells[3].innerText;
-    const soluongton = cells[4].innerText;
-    const ngayhethan = cells[5].innerText;
 
-    // Điền các giá trị từ dòng vào dialog
-    document.querySelector('#modal input[type="mathuoc"]').value = mathuoc;
-    document.querySelector('#modal input[type="mathuoc"]').readOnly = true;
-    document.querySelector('#modal input[type="mathuoc"]').classList.add('field-not-edit');
-    document.querySelector('#modal input[type="tenthuoc"]').value = tenthuoc;
-    document.querySelector('#modal input[type="dongiathuoc"]').value = dongia;
-    document.querySelector('#modal input[type="chidinhthuoc"]').value = chidinh;
-    document.querySelector('#modal input[type="soluongton"]').value = soluongton;
-    document.querySelector('#modal input[type="ngayhethan"]').value = ngayhethan;
+    
+    fetch('/Trang_procedure', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mathuoc: mathuoc }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'success'){
+            alert(data.message)
+        }
+        else {
+        // Xử lý dữ liệu nh ận được từ máy chủ
+        const { tenthuoc, dongia, chidinh, soluongton, ngayhethan } = data.data[0];
+        console.log(data.data)
+        console.log(tenthuoc)
+        // Điền các giá trị từ dữ liệu vào dialog
+        document.querySelector('#modal input[type="mathuoc"]').value = mathuoc;
+        document.querySelector('#modal input[type="mathuoc"]').readOnly = true;
+        document.querySelector('#modal input[type="mathuoc"]').classList.add('field-not-edit');
+        document.querySelector('#modal input[type="tenthuoc"]').value = tenthuoc;
+        document.querySelector('#modal input[type="dongiathuoc"]').value = dongia;
+        document.querySelector('#modal input[type="chidinhthuoc"]').value = chidinh;
+        document.querySelector('#modal input[type="soluongton"]').value = soluongton;
+        document.querySelector('#modal input[type="ngayhethan"]').value = ngayhethan;
 
-    // Hiển thị dialog
-    const dialog = document.getElementById('modal');
-    dialog.showModal();
+        // Hiển thị dialog
+        const dialog = document.getElementById('modal');
+        dialog.showModal();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 

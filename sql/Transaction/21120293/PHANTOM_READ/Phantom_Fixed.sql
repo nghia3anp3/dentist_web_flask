@@ -13,9 +13,9 @@ BEGIN TRAN
 		END
 
 		-- Kiem tra so luong ton
-		IF NOT EXISTS (SELECT SoLuongTon
+		IF EXISTS (SELECT SoLuongTon
 						FROM tb_ThuocHienHanh() as hh
-						WHERE hh.TenThuoc = @TenThuoc AND  (@SoLuong - hh.SoLuongTon >= 0))
+						WHERE hh.TenThuoc = @TenThuoc AND  (@SoLuong - hh.SoLuongTon < 0))
 		BEGIN
 			PRINT(N'Vượt quá số lượng tồn')
 			ROLLBACK TRAN
@@ -29,10 +29,8 @@ BEGIN TRAN
 	BEGIN TRY
 		DECLARE @MaThuoc char(10), @SoLuongTon int, @DonGia int
 		SELECT @MaThuoc = MaThuoc, @SoLuongTon = SoLuongTon, @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
-		SELECT GETDATE();
 		INSERT INTO DONTHUOC(MaDonThuoc, MaThuoc, SoLuong, DonGia) VALUES (@MaHoSo, @MaThuoc, @SoLuong, @DonGia)
 		UPDATE THUOC SET SoLuongTon = @SoLuongTon - @SoLuong WHERE MaThuoc = @MaThuoc
-		SELECT GETDATE();
 	END TRY
 		BEGIN CATCH
 			DECLARE @ErrorMsg VARCHAR(2000)
@@ -67,9 +65,8 @@ BEGIN TRAN
 		
 		--Cap nhat don thuoc
 	BEGIN TRY
-		SELECT GETDATE();
 		UPDATE DONTHUOC SET SoLuong = @SoLuong WHERE MaDonThuoc = @MaDonThuoc AND MaThuoc = @MaThuoc
-		SELECT GETDATE();
+
 		IF (@SoLuong < @SoLuongGoc)
 		BEGIN
 			UPDATE THUOC SET SoLuongTon = SoLuongTon + (@SoLuongGoc - @SoLuong) WHERE MaThuoc = @MaThuoc
@@ -80,24 +77,6 @@ BEGIN TRAN
 			UPDATE THUOC SET SoLuongTon = SoLuongTon - (@SoLuong - @SoLuongGoc) WHERE MaThuoc = @MaThuoc
 		END
 
-/*		SELECT @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc;
-
-		IF @DonGia IS NULL
-		BEGIN
-			PRINT('KHÔNG TỒN TẠI THUỐC NÀY')
-			ROLLBACK TRAN
-			RETURN 0
-		END
-
-		IF (@SoLuong < @SoLuongGoc)
-		BEGIN
-			UPDATE HOSOBENHAN SET TongTien = TongTien - (@SoLuongGoc - @SoLuong)* @DonGia  WHERE MaHoSo = @MaDonThuoc
-		END
-
-		ELSE
-		BEGIN
-			UPDATE HOSOBENHAN SET TongTien = TongTien + (@SoLuong - @SoLuongGoc)* @DonGia  WHERE MaHoSo = @MaDonThuoc
-		END  */
 	END TRY
 		BEGIN CATCH
 			DECLARE @ErrorMsg VARCHAR(2000)

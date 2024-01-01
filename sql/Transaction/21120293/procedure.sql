@@ -823,8 +823,8 @@ FOR insert, update
 AS
 BEGIN
 	IF EXISTS ( SELECT * 
-				FROM inserted i, THUOC T 
-				WHERE i.MaThuoc = T.MaThuoc
+				FROM inserted i, THUOC T with (XLock)
+				WHERE i.MaThuoc = T.MaThuoc 
 				AND T.TrangThai = 0)
 	BEGIN
 		RAISERROR (N'Thuốc đã bị xoá nên không thêm/sửa được', 16, 1)
@@ -894,5 +894,30 @@ BEGIN
 		RAISERROR (N'Nha sĩ đã có lịch hẹn với khách hàng', 16, 1)
 		ROLLBACK
 	END
+END
+GO
+
+CREATE PROCEDURE Dang_nhap
+    @SDT VARCHAR(20),
+    @MatKhau VARCHAR(50)
+AS
+
+BEGIN
+    DECLARE @Exists BIT
+
+    SELECT @Exists = CASE 
+                        WHEN EXISTS (SELECT 1 FROM TAIKHOAN WHERE SDT = @SDT AND TrangThai = 1 AND MatKhau = @MatKhau)
+                        THEN 1
+                        ELSE 0
+                    END
+
+    IF @Exists = 1
+    BEGIN
+        SELECT TOP 1 LoaiND FROM TAIKHOAN WHERE SDT = @SDT AND TrangThai = 1 AND MatKhau = @MatKhau
+    END
+    ELSE
+    BEGIN
+        SELECT 0 AS Result
+    END
 END
 GO
