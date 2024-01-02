@@ -1,14 +1,14 @@
 ﻿USE HQT_CSDL 
 GO
 
-CREATE OR ALTER PROCEDURE USP_TimThongTin_BangTen
-    @HoTen nvarchar(50)
+CREATE OR ALTER PROCEDURE USP_TimThongTin_BangSDT
+    @SDT nvarchar(50)
 AS
 BEGIN
 -- SET TRAN ISOLATION LEVEL REPEATABLE READ
 	BEGIN TRAN
     -- Kiem tra xem sdt co ton tai trong tai khoan khong
-		IF @HoTen NOT IN (SELECT HoTen FROM NGUOIDUNG)
+		IF @SDT NOT IN (SELECT SDT FROM NGUOIDUNG)
 		BEGIN
 			PRINT N'Không tồn tại trong danh sách tài khoản!'
 			ROLLBACK TRAN
@@ -21,7 +21,7 @@ BEGIN
 		BEGIN TRY
 		
 			-- Lay thong tin nguoi dung can truy van de khoa tai khoan
-			SELECT * FROM NGUOIDUNG WHERE HoTen = @HoTen
+			SELECT * FROM NGUOIDUNG WHERE SDT = @SDT
         
 		END TRY
 	BEGIN CATCH
