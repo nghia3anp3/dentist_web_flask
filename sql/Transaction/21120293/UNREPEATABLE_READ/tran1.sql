@@ -5,7 +5,7 @@ GO
 SELECT * FROM TAIKHOAN
 ---
 DECLARE @RT INT
-EXEC @RT = USP_TimThongTin_BangTen N'Lê Nguyễn Trọng Nghĩa'
+EXEC @RT = USP_TimThongTin_BangSDT '564'
 
 IF @RT = 1
 	PRINT N'Đọc thành công'

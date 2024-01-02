@@ -35,30 +35,29 @@ END
 GO
 --------------------------------------------------------------------------------
 CREATE OR ALTER PROCEDURE USP_SuaTT_SDT
-	 @SDT varchar(20), @HoTen nvarchar(30), @NgaySinh date, @DiaChi nvarchar(50), @MatKhau varchar(20)
+	 @SDT varchar(20), @SDT_old varchar(20)
 AS
 BEGIN
 	BEGIN TRAN
 		--Kiem tra SDT Co ton tai chua
-		IF @SDT NOT IN (SELECT SDT FROM TAIKHOAN)
+		IF @SDT IN (SELECT SDT FROM TAIKHOAN)
 		BEGIN
-			PRINT N'Số điện thoại này chưa được đăng kí!'
+			PRINT N'Số điện thoại này đã được đăng kí!'
 			ROLLBACK TRAN
 			RETURN
 		END
 		--Cap nhat don thuoc
 	BEGIN TRY
-		IF (@HoTen <> '' AND @MatKhau <> '')
-		BEGIN
-			UPDATE NGUOIDUNG SET HoTen = @HoTen, NgaySinh = @NgaySinh, DiaChi = @DiaChi WHERE SDT = @SDT
-			UPDATE TAIKHOAN SET MatKhau = @MatKhau WHERE SDT = @SDT
-		END 
-		
-		ELSE
-		BEGIN
-			RAISERROR(N'Họ tên và Mật khẩu phải khác rỗng', 16, 1)
-			RETURN 0
-		END
+		DECLARE @HoTen nvarchar(50), @NgaySinh date, @DiaChi nvarchar(50), @MatKhau varchar(20), @LoaiND varchar(20)
+		SELECT @NgaySinh=NgaySinh, @HoTen=HoTen, @DiaChi=DiaChi FROM NGUOIDUNG WHERE SDT = @SDT_old
+
+		INSERT INTO NGUOIDUNG VALUES (@SDT, @HoTen, @NgaySinh, @DiaChi)
+
+		UPDATE TAIKHOAN SET SDT = @SDT WHERE SDT = @SDT_old
+		UPDATE HOSOBENHAN SET SDT = @SDT WHERE SDT = @SDT_old
+
+		DELETE FROM NGUOIDUNG WHERE SDT = @SDT_old
+
 	END TRY
 		BEGIN CATCH
 			DECLARE @ErrorMsg VARCHAR(2000)
