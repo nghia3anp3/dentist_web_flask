@@ -1,7 +1,7 @@
 ﻿USE HQT_CSDL
 GO
 
---Tran tao sua so luong
+--Tran tao sua so dien thoai
 SELECT * FROM TAIKHOAN
 ---
 DECLARE @RT INT
