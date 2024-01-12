@@ -1,7 +1,7 @@
 ﻿USE HQT_CSDL
 GO
 
---Tran tao don thuoc
+--Tran tim thong tin bang so dien thoai
 SELECT * FROM TAIKHOAN
 ---
 DECLARE @RT INT
@@ -15,4 +15,3 @@ ELSE
 
 select * from NGUOIDUNG	
 SELECT * FROM TAIKHOAN
---DELETE FROM DONTHUOC WHERE MaDonThuoc = '6' AND MaThuoc = 'T004'
