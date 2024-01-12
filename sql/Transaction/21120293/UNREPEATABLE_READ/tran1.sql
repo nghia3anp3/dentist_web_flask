@@ -1,8 +1,8 @@
 ﻿USE HQT_CSDL
 GO
 
---Tran tim thong tin bang so dien thoai
-SELECT * FROM TAIKHOAN
+--Trans tim thong tin bang so dien thoai
+SELECT * FROM NGUOIDUNG
 ---
 DECLARE @RT INT
 EXEC @RT = USP_TimThongTin_BangSDT '564'
@@ -14,4 +14,3 @@ ELSE
 ---
 
 select * from NGUOIDUNG	
-SELECT * FROM TAIKHOAN
