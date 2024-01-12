@@ -40,7 +40,7 @@ AS
 BEGIN
 	BEGIN TRAN
 		--Kiem tra SDT Co ton tai chua
-		IF @SDT IN (SELECT SDT FROM TAIKHOAN)
+		IF @SDT IN (SELECT SDT FROM NGUOIDUNG)
 		BEGIN
 			PRINT N'Số điện thoại này đã được đăng kí!'
 			ROLLBACK TRAN
