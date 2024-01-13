@@ -4,8 +4,7 @@ GO
 SELECT * FROM LICHBAN
 ---
 DECLARE @RT INT
--- EXEC @RT = USP_CapNhatLichBan '397', 1, '2023-12-02', '12:00', '2023-12-02', '14:00'
-EXEC @RT = USP_CapNhatLichBan '397', 1, '2024-01-20', '13:00', '2024-01-20', '15:00'
+EXEC @RT = USP_CapNhatLichBan '397', 1, '2023-12-02', '12:00', '2023-12-02', '14:00'
 IF @RT = 0
 	PRINT N'Cập nhật thất bại'
 ELSE

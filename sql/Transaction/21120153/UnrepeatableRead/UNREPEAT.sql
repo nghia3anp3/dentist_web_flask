@@ -1,10 +1,11 @@
 USE HQT_CSDL 
 GO
 
-CREATE OR ALTER PROCEDURE USP_TimThuocBangMa
+CREATE
+-- ALTER
+PROCEDURE USP_TimThuocBangMa
     @MaThuoc char(10)
 AS
--- SET TRAN ISOLATION LEVEL REPEATABLE READ
 BEGIN TRAN
     -- Kiem tra: thuoc can sua co ton tai trong kho thuoc khong
     IF @MaThuoc NOT IN (SELECT MaThuoc FROM tb_ThuocHienHanh())
@@ -29,7 +30,9 @@ BEGIN TRAN
 COMMIT TRAN
 GO
 --------------------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE USP_XoaThuoc
+CREATE
+-- ALTER
+PROCEDURE USP_XoaThuoc
     @MaThuoc char(10)
 AS
 BEGIN TRAN

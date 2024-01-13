@@ -1,7 +1,9 @@
 USE HQT_CSDL 
 GO
 
-CREATE OR ALTER PROCEDURE USP_DatLichHen
+CREATE
+-- ALTER
+PROCEDURE USP_DatLichHen
     @SDT VARCHAR(20), @HoTen nvarchar(30), @NgaySinh varchar(15), @DiaChi nvarchar(50), 
 	@NgayHen varchar(15), @GioHen varchar(15), @MaNhaSi VARCHAR(20)
 AS  
@@ -38,7 +40,7 @@ BEGIN TRAN
     BEGIN TRY
         -- Them lich hen
         DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
-        INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioBD, @SDT, @MaNhaSi, 0)
+        INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioBD, @SDT, @MaNhaSi)
 
         -- Them thong tin nguoi dung neu chua co
         DECLARE @isSDTExist BIT
@@ -62,7 +64,9 @@ COMMIT TRAN
 RETURN 1
 GO
 --------------------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE USP_CapNhatLichBan
+CREATE
+-- ALTER
+PROCEDURE USP_CapNhatLichBan
     @MaNhaSi varchar(20), @MALB int, @NgayBDMoi varchar(20), @GioBDMoi varchar(20), @NgayKTMoi varchar(20), @GioKTMoi varchar(20)
 AS
 SET TRAN ISOLATION LEVEL SERIALIZABLE

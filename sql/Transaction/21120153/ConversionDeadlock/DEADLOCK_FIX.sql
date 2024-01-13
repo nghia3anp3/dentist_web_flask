@@ -1,11 +1,13 @@
 USE HQT_CSDL 
 GO
 
-CREATE OR ALTER PROCEDURE USP_DatLichHen
+ALTER
+-- CREATE
+PROCEDURE USP_DatLichHen
     @SDT VARCHAR(20), @HoTen nvarchar(30), @NgaySinh varchar(15), @DiaChi nvarchar(50), 
 	@NgayHen varchar(15), @GioHen varchar(15), @MaNhaSi VARCHAR(20)
 AS  
--- SET TRAN ISOLATION LEVEL REPEATABLE READ
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
     DECLARE @NgayGioBD DATETIME = CONVERT(DATETIME, @NgayHen + ' ' + LEFT(@GioHen,2) + ':00')
     -- Kiem tra: ngay gio hen co bi trung khong (luu y: khong trung voi chinh no)
@@ -38,7 +40,7 @@ BEGIN TRAN
     BEGIN TRY
         -- Them lich hen
         DECLARE @MaLH int = (SELECT ISNULL(MAX(MaLH),0) FROM LICHHEN) + 1
-        INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioBD, @SDT, @MaNhaSi, 0)
+        INSERT INTO LICHHEN VALUES (@MaLH, @NgayGioBD, @SDT, @MaNhaSi)
 
         -- Them thong tin nguoi dung neu chua co
         DECLARE @isSDTExist BIT
@@ -62,10 +64,12 @@ COMMIT TRAN
 RETURN 1
 GO
 --------------------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE USP_CapNhatLichBan
+ALTER
+-- CREATE
+PROCEDURE USP_CapNhatLichBan
     @MaNhaSi varchar(20), @MALB int, @NgayBDMoi varchar(20), @GioBDMoi varchar(20), @NgayKTMoi varchar(20), @GioKTMoi varchar(20)
 AS
--- SET TRAN ISOLATION LEVEL SERIALIZABLE
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
     DECLARE @NgayGioBD_Moi DATETIME = CONVERT(DATETIME, @NgayBDMoi + ' ' + LEFT(@GioBDMoi,2) + ':00')
     DECLARE @NgayGioKT_Moi DATETIME = CONVERT(DATETIME, @NgayKTMoi + ' ' + LEFT(@GioKTMoi,2) + ':00')
