@@ -8,7 +8,7 @@ BEGIN
 SET TRAN ISOLATION LEVEL REPEATABLE READ
 	BEGIN TRAN
     -- Kiem tra xem sdt co ton tai trong tai khoan khong
-		IF @SDT NOT IN (SELECT SDT FROM NGUOIDUNG)
+		IF @SDT NOT IN (SELECT SDT FROM TAIKHOAN)
 		BEGIN
 			PRINT N'Không tồn tại trong danh sách tài khoản!'
 			ROLLBACK TRAN
@@ -21,7 +21,7 @@ SET TRAN ISOLATION LEVEL REPEATABLE READ
 		BEGIN TRY
 		
 			-- Lay thong tin nguoi dung can truy van de khoa tai khoan
-			SELECT * FROM NGUOIDUNG WHERE SDT = @SDT
+			SELECT * FROM TAIKHOAN WHERE SDT = @SDT
         
 		END TRY
 	BEGIN CATCH
@@ -46,7 +46,7 @@ BEGIN
 			ROLLBACK TRAN
 			RETURN
 		END
-		--Cap nhat don thuoc
+		--Cap nhat thong tin sdt
 	BEGIN TRY
 		DECLARE @HoTen nvarchar(50), @NgaySinh date, @DiaChi nvarchar(50), @MatKhau varchar(20), @LoaiND varchar(20)
 		SELECT @NgaySinh=NgaySinh, @HoTen=HoTen, @DiaChi=DiaChi FROM NGUOIDUNG WHERE SDT = @SDT_old

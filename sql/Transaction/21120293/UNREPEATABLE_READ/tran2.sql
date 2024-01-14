@@ -5,7 +5,7 @@ GO
 SELECT * FROM TAIKHOAN
 ---
 DECLARE @RT INT
-EXEC @RT = USP_SuaTT_SDT '1111', '564'
+EXEC @RT = USP_SuaTT_SDT '564', '1111'
 
 IF @RT = 1
 	PRINT N'Sửa tài khoản thành công!'

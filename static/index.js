@@ -18,7 +18,7 @@ function edit(element) {
     const mathuoc = cells[0].innerText;
 
     
-    fetch('/Trang_procedure', {
+    fetch('/get_medicine_by_name', {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',

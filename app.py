@@ -1288,40 +1288,40 @@ def xemhsbenhan():
 def xemlichkham():
     return render_template('./khachhang/xemlichkham.html')
 
-@app.route('/Trang_procedure', methods=['POST'])
-def Trang_procedure():  
-    data = request.json
-    print(data)
-    query = "Exec USP_TimThuocBangMa ?"
-    try:
-        cursor = conn.cursor()
-        cursor.execute(query,(data['mathuoc'], ))
+# @app.route('/Trang_procedure', methods=['POST'])
+# def Trang_procedure():  
+#     data = request.json
+#     print(data)
+#     query = "Exec sp_TimThuocBangTen ?"
+#     try:
+#         cursor = conn.cursor()
+#         cursor.execute(query,(data['mathuoc'], ))
 
-        result = cursor.fetchall()
+#         result = cursor.fetchall()
         
-        thuoc = []
+#         thuoc = []
 
-        if len(result)>0:
-            for row in result:
-                tenthuoc = row[1].strip()
-                dongia = row[2]
-                chidinh = row[3]
-                soluongton = row[4]
-                ngayhethan = row[5]
+#         if len(result)>0:
+#             for row in result:
+#                 tenthuoc = row[1].strip()
+#                 dongia = row[2]
+#                 chidinh = row[3]
+#                 soluongton = row[4]
+#                 ngayhethan = row[5]
 
-            thuoc.append({
-                "tenthuoc": tenthuoc,
-                "dongia": dongia,
-                "chidinh": chidinh,   
-                "soluongton": soluongton,
-                "ngayhethan": ngayhethan
-            })
-            return jsonify({'status': 'success', 'data': thuoc})
-        else:
-            return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
+#             thuoc.append({
+#                 "tenthuoc": tenthuoc,
+#                 "dongia": dongia,
+#                 "chidinh": chidinh,   
+#                 "soluongton": soluongton,
+#                 "ngayhethan": ngayhethan
+#             })
+#             return jsonify({'status': 'success', 'data': thuoc})
+#         else:
+#             return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
     
-    except obdc.Error as ex:
-        return jsonify({'status': 'error', 'message': str(ex)})
+#     except obdc.Error as ex:
+#         return jsonify({'status': 'error', 'message': str(ex)})
 
 if __name__ == '__main__':
     app.run(debug=True)
