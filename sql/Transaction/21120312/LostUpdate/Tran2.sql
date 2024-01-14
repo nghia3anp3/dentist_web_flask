@@ -2,7 +2,7 @@
 GO
 
 DECLARE @RT INT
-EXEC @RT = USP_TaoDonThuoc 5, 'Delta' , 30
+EXEC @RT = USP_TaoDonThuoc 14, 'Delta' , 20
 --EXEC @RT = USP_TaoDonThuoc 5, 'Paracetamol' , 30
 
 IF @RT = 0
@@ -13,3 +13,6 @@ ELSE
 GO
 
 SELECT * FROM tb_ThuocHienHanh()
+
+select * from tb_ThuocHienHanh()
+select * from DONTHUOC

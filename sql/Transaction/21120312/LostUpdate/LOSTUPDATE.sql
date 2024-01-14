@@ -9,7 +9,7 @@ BEGIN TRAN
 	BEGIN TRY
 		-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
 		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
-		BEGIN
+		BEGIN	
 			PRINT N'Thuốc không tồn tại trong kho hiện hành'
 			ROLLBACK TRAN
 			RETURN 0
@@ -38,7 +38,7 @@ BEGIN TRAN
 	END TRY
 
 	BEGIN CATCH
-		DECLARE @ErrorMsg VARCHAR(2000)
+		DECLARE @ErrorMsg VARCHAR(2000)	
 		SELECT @ErrorMsg = N'Lỗi: ' + ERROR_MESSAGE()
 		RAISERROR(@ErrorMsg, 16,1)
 		ROLLBACK TRAN

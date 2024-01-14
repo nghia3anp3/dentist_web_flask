@@ -1,5 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify,session, make_response
 from flask_session import Session
+from threading import Thread
+
 # import pandas as pd
 import pypyodbc as obdc
 
@@ -21,21 +23,21 @@ conn2 = obdc.connect(connection_string)
 # conn2 = obdc.connect(connection_string)
 
 
-connection_string = (
-    r'DRIVER={SQL Server};'
-    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-    r'DATABASE=HQT_CSDL;'
-    r'Trusted_Connection=yes;'
-)
-conn = obdc.connect (connection_string)
-connection_string = (   
-    r'DRIVER={SQL Server};'
-    r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
-    r'DATABASE=HQT_CSDL;'
-    r'Trusted_Connection=yes;'
-)
-conn = obdc.connect (connection_string)
-conn2 = obdc.connect(connection_string)
+# connection_string = (
+#     r'DRIVER={SQL Server};'
+#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+#     r'DATABASE=HQT_CSDL;'
+#     r'Trusted_Connection=yes;'
+# )
+# conn = obdc.connect (connection_string)
+# connection_string = (   
+#     r'DRIVER={SQL Server};'
+#     r'SERVER=DESKTOP-S3ESUI2\BAOSERVER;'
+#     r'DATABASE=HQT_CSDL;'
+#     r'Trusted_Connection=yes;'
+# )
+# conn = obdc.connect (connection_string)
+# conn2 = obdc.connect(connection_string)
 
 
 app = Flask(__name__)
@@ -43,6 +45,8 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+consor_route = 0
 
 @app.route('/')
 def base():
@@ -373,7 +377,6 @@ def get_route():
     return jsonify(session['route'])
     
 
-
 @app.route('/add_patient_file', methods=['POST'])
 def add_patient_file():
     if not session.get('sdt'):
@@ -381,84 +384,46 @@ def add_patient_file():
     
     manhasi = session.get('sdt')
     data = request.json
-    print(data)
     sdt = data['sdt']
     tenthuoc = data['tenthuoc']
     soluongthuoc = data['soluongthuoc']
     selectedOption = data['selectedOption']
+    global consor_route
 
-    try:
-        cursor = conn2.cursor()
-        cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
-        original_code = cursor.fetchone()
+    conn_list = [conn, conn2]
 
-        # cursor.execute("{CALL sp_TaoHoSoBenhAn (?,?)}", (sdt,manhasi))
+    consor_route+=1
+    if consor_route == 2:
+        consor_route = 0
+    # cursor = conn_list[consor_route].cursor()
+    cursor = conn_list[consor_route].cursor()
+    cursor.execute("{CALL sp_TaoHoSoBenhAn (?,?)}", (sdt,manhasi))
+    cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
+    after_code = cursor.fetchall()[0]
+    cursor.commit()
 
-        # cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
-        # after_code = cursor.fetchone()
-
-    #     if (original_code==after_code):
-    #         return jsonify({'status': 'error', 'message': "Lỗi SĐT!"})
-        
-    #     if len(tenthuoc)>0:
-    #         for i in range(len(tenthuoc)):
-    #             query = """
-    #                 SET NOCOUNT ON;
-    #                 DECLARE @RESULT INT
-    #                 EXEC @RESULT = USP_TaoDonThuoc ?,?, ?
-    #                 SELECT @RESULT AS COL
-    #             """
-
-    #             cursor.execute(query, ((after_code[0],tenthuoc[i],soluongthuoc[i])))
-
-    #             res = cursor.fetchall()[0]
-
-    #             print("Day la resss: ", res)
-
-    #             if res[0]=='0':
-    #                 return jsonify({'status': 'error', 'message': "Lỗi thêm thuốc!"})
-                
-    #     if len(selectedOption)>0:
-    #         for item in selectedOption:
-    #             print(item)
-    #             query = """
-    #                 SET NOCOUNT ON;
-    #                 DECLARE @RESULT INT
-    #                 EXEC @RESULT = sp_TaoDonDV '{}', N'{}'
-    #                 SELECT @RESULT AS COL
-    #             """.format(after_code[0],item)
-                
-    #             cursor.execute(query)
-    #             res = cursor.fetchone()[0]
-    #             print("them dich vu: ",res)
-    #             if res=='0':
-    #                 return jsonify({'status': 'error', 'message': "Lỗi thêm dịch vụ!"})
-                
-    #     cursor.commit()
-    #     cursor.close()
-    # # except Exception as e:
-    # #     return jsonify({'status': 'error', 'message': str(e)})
-        cursor.execute("SELECT TOP 1 MaHoSo FROM HOSOBENHAN ORDER BY MaHoSo DESC")
-        after_code = cursor.fetchone()
-        print ("DONE SUCCESS" , )
-        soluongthuoc_conlai = -1 
-        if (original_code==after_code):
-            return jsonify({'status': 'error', 'message': "Lỗi SĐT!"})
-        
+    cursor = conn_list[consor_route].cursor()
+    try:       
+        print("after: ",after_code)
         if len(tenthuoc)>0:
             for i in range(len(tenthuoc)):
-                print ("ccc" , after_code[0],tenthuoc[i],soluongthuoc[i])
+
+                # Cần lưu ý là tại đây có 2 Trans (Nguyên Phương và Nghĩa)
+                # warning
+                # warning
+                # warning
                 query = """
                     SET NOCOUNT ON;
                     DECLARE @RESULT INT
-                    EXEC @RESULT = USP_TaoDonThuoc '{}','{}', '{}'
+                    EXEC @RESULT = USP_TaoDonThuoc ?,?,?
                     SELECT @RESULT AS COL
-                """.format(after_code[0],tenthuoc[i],soluongthuoc[i])
-
-                cursor.execute(query)
-                res = cursor.fetchone()[0]
-                soluongthuoc_conlai = res 
-                if res=='0':
+                """
+                cursor.execute(query, (after_code[0],tenthuoc[i],soluongthuoc[i]))
+                res = cursor.fetchall()
+                print(res)
+                res = res[0]
+                # soluongthuoc_conlai = res 
+                if res[0]=='0':
                     return jsonify({'status': 'error', 'message': "Lỗi thêm thuốc!"})
                 
         if len(selectedOption)>0:
@@ -480,10 +445,10 @@ def add_patient_file():
         cursor.commit()
         cursor.close()
     except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)})
+            return jsonify({'status': 'error', 'message': 'Có lỗi xảy ra, dữ liệu đã rollback'})
             
-    return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!" , "thuoc_con" : soluongthuoc_conlai})
-
+    # return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!" , "thuoc_con" : soluongthuoc_conlai})
+    return jsonify({'status': 'success', 'message': "Đã thêm hồ sơ bệnh án!"})
 
 @app.route('/get_date', methods=['GET'])
 def get_date():

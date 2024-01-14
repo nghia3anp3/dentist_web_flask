@@ -15,7 +15,7 @@ BEGIN TRAN
 		-- Kiem tra so luong ton
 		IF EXISTS (SELECT SoLuongTon
 						FROM tb_ThuocHienHanh() as hh
-						WHERE hh.TenThuoc = @TenThuoc AND  (@SoLuong - hh.SoLuongTon < 0))
+						WHERE hh.TenThuoc = @TenThuoc AND  (@SoLuong - hh.SoLuongTon > 0))
 		BEGIN
 			PRINT(N'Vượt quá số lượng tồn')
 			ROLLBACK TRAN

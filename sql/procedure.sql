@@ -823,7 +823,7 @@ FOR insert, update
 AS
 BEGIN
 	IF EXISTS ( SELECT * 
-				FROM inserted i, THUOC T 
+				FROM inserted i, THUOC T with (XLock)
 				WHERE i.MaThuoc = T.MaThuoc
 				AND T.TrangThai = 0)
 	BEGIN
@@ -935,7 +935,7 @@ GO
 exec Get_bill_info_from_SDT @SDT= "567"
 GO
 
-CREATE PROCEDURE spDang_nhap
+CREATE PROCEDURE Dang_nhap
     @SDT VARCHAR(20),
     @MatKhau VARCHAR(50)
 AS
@@ -959,12 +959,3 @@ BEGIN
     END
 END
 GO
-EXEC Dang_nhap @SDT='20',@MatKhau='thu'
-
-
-
-SELECT HoTen FROM NGUOIDUNG , TAIKHOAN
-WHERE NGUOIDUNG.SDT = TAIKHOAN.SDT AND NGUOIDUNG.SDT = '020'
-
-
-SELECT * FROM TAIKHOAN
