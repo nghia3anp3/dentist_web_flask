@@ -12,13 +12,57 @@ function hideAll() {
     }
 }
 
+// function edit(element) {
+//     const row = element.closest('tr');
+//     const cells = row.querySelectorAll('td');
+//     const mathuoc = cells[0].innerText;
+
+    
+//     fetch('/Trang_procedure', {
+//         method: 'POST', 
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ mathuoc: mathuoc }),
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.status !== 'success'){
+//             alert(data.message)
+//         }
+//         else {
+//         // Xử lý dữ liệu nh ận được từ máy chủ
+//         const { tenthuoc, dongia, chidinh, soluongton, ngayhethan } = data.data[0];
+//         console.log(data.data)
+//         console.log(tenthuoc)
+//         // Điền các giá trị từ dữ liệu vào dialog
+//         document.querySelector('#modal input[type="mathuoc"]').value = mathuoc;
+//         document.querySelector('#modal input[type="mathuoc"]').readOnly = true;
+//         document.querySelector('#modal input[type="mathuoc"]').classList.add('field-not-edit');
+//         document.querySelector('#modal input[type="tenthuoc"]').value = tenthuoc;
+//         document.querySelector('#modal input[type="dongiathuoc"]').value = dongia;
+//         document.querySelector('#modal input[type="chidinhthuoc"]').value = chidinh;
+//         document.querySelector('#modal input[type="soluongton"]').value = soluongton;
+//         document.querySelector('#modal input[type="ngayhethan"]').value = ngayhethan;
+
+//         // Hiển thị dialog
+//         const dialog = document.getElementById('modal');
+//         dialog.showModal();
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//     });
+// }
+
+//Day la procedure main, o tren la cua trang
 function edit(element) {
     const row = element.closest('tr');
     const cells = row.querySelectorAll('td');
     const mathuoc = cells[0].innerText;
 
-    
-    fetch('/get_medicine_by_name', {
+    //chuyen sang /Trang_procedure
+    fetch('/tim_thuoc_bang_ma', {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
@@ -54,7 +98,6 @@ function edit(element) {
         console.error('Error:', error);
     });
 }
-
 
 function deleteRows() {
     var table = document.getElementById("drugTable");

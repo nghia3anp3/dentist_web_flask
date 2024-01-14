@@ -345,15 +345,23 @@ def edit_medicine():
 def delete_medicine():
     mathuoc = request.form.get('mathuoc')
 
+    # Đây là trans của Trang
+    # query = """
+    #     SET NOCOUNT ON;
+    #     DECLARE @RESULT INT;
+    #     EXEC @RESULT = USP_XoaThuoc ?;
+    #     SELECT @RESULT AS COL;
+    # """
+
     query = """
         SET NOCOUNT ON;
         DECLARE @RESULT INT;
-        EXEC @RESULT = USP_XoaThuoc ?;
+        EXEC @RESULT = sp_XoaThuoc ?;
         SELECT @RESULT AS COL;
     """
 
     try:
-        cursor = conn2.cursor()
+        cursor = conn.cursor()
         cursor.execute(query, (mathuoc,))
         res = cursor.fetchall()[0]
         print(res[0])
@@ -409,13 +417,14 @@ def add_patient_file():
             for i in range(len(tenthuoc)):
 
                 # Cần lưu ý là tại đây có 2 Trans (Nguyên Phương và Nghĩa)
+                # Đổi tên từ sp -> USP và ngược lại
                 # warning
                 # warning
                 # warning
                 query = """
                     SET NOCOUNT ON;
                     DECLARE @RESULT INT
-                    EXEC @RESULT = USP_TaoDonThuoc ?,?,?
+                    EXEC @RESULT = sp_TaoDonThuoc ?,?,?
                     SELECT @RESULT AS COL
                 """
                 cursor.execute(query, (after_code[0],tenthuoc[i],soluongthuoc[i]))
@@ -1288,40 +1297,75 @@ def xemhsbenhan():
 def xemlichkham():
     return render_template('./khachhang/xemlichkham.html')
 
-# @app.route('/Trang_procedure', methods=['POST'])
-# def Trang_procedure():  
-#     data = request.json
-#     print(data)
-#     query = "Exec sp_TimThuocBangTen ?"
-#     try:
-#         cursor = conn.cursor()
-#         cursor.execute(query,(data['mathuoc'], ))
+@app.route('/tim_thuoc_bang_ma', methods=['POST'])
+def tim_thuoc_bang_ma():  
+    data = request.json
+    query = "Exec sp_TimThuocBangMa ?"
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query,(data['mathuoc'], ))
 
-#         result = cursor.fetchall()
+        result = cursor.fetchall()
         
-#         thuoc = []
+        thuoc = []
 
-#         if len(result)>0:
-#             for row in result:
-#                 tenthuoc = row[1].strip()
-#                 dongia = row[2]
-#                 chidinh = row[3]
-#                 soluongton = row[4]
-#                 ngayhethan = row[5]
+        if len(result)>0:
+            for row in result:
+                tenthuoc = row[1].strip()
+                dongia = row[2]
+                chidinh = row[3]
+                soluongton = row[4]
+                ngayhethan = row[5]
 
-#             thuoc.append({
-#                 "tenthuoc": tenthuoc,
-#                 "dongia": dongia,
-#                 "chidinh": chidinh,   
-#                 "soluongton": soluongton,
-#                 "ngayhethan": ngayhethan
-#             })
-#             return jsonify({'status': 'success', 'data': thuoc})
-#         else:
-#             return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
+            thuoc.append({
+                "tenthuoc": tenthuoc,
+                "dongia": dongia,
+                "chidinh": chidinh,   
+                "soluongton": soluongton,
+                "ngayhethan": ngayhethan
+            })
+            cursor.commit()
+            return jsonify({'status': 'success', 'data': thuoc})
+        else:
+            return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
     
-#     except obdc.Error as ex:
-#         return jsonify({'status': 'error', 'message': str(ex)})
+    except obdc.Error as ex:
+        return jsonify({'status': 'error', 'message': str(ex)})
+
+@app.route('/Trang_procedure', methods=['POST'])
+def Trang_procedure():  
+    data = request.json
+    query = "Exec USP_TimThuocBangMa ?"
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query,(data['mathuoc'], ))
+
+        result = cursor.fetchall()
+        
+        thuoc = []
+
+        if len(result)>0:
+            for row in result:
+                tenthuoc = row[1].strip()
+                dongia = row[2]
+                chidinh = row[3]
+                soluongton = row[4]
+                ngayhethan = row[5]
+
+            thuoc.append({
+                "tenthuoc": tenthuoc,
+                "dongia": dongia,
+                "chidinh": chidinh,   
+                "soluongton": soluongton,
+                "ngayhethan": ngayhethan
+            })
+            cursor.commit()
+            return jsonify({'status': 'success', 'data': thuoc})
+        else:
+            return jsonify({'status': 'error', 'message':'Có lỗi xảy ra! Dữ liệu đã được roll back'})
+    
+    except obdc.Error as ex:
+        return jsonify({'status': 'error', 'message': str(ex)})
 
 if __name__ == '__main__':
     app.run(debug=True)

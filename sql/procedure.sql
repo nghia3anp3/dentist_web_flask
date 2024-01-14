@@ -146,6 +146,21 @@ BEGIN
 END;
 GO
 
+CREATE
+-- ALTER
+PROCEDURE sp_TimThuocBangMa
+    @MaThuoc char(10)
+as
+begin-- Kiem tra: thuoc can sua co ton tai trong kho thuoc khong
+    IF @MaThuoc NOT IN (SELECT MaThuoc FROM tb_ThuocHienHanh())
+    BEGIN
+        PRINT N'Mã thuốc không tồn tại trong kho hiện hành'
+        ROLLBACK TRAN
+        RETURN
+        SELECT * FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc
+	END
+END
+GO
 -- EXEC sp_TimThuocBangTen 'AM'
 -- GO
 
