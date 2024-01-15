@@ -2,7 +2,7 @@
 CREATE OR ALTER PROCEDURE USP_TaoDonThuoc
 	@MaHoSo int, @TenThuoc char(30), @SoLuong int
 AS
-SET TRAN ISOLATION LEVEL Serializable
+SET TRAN ISOLATION LEVEL REPEATABLE READ
 BEGIN TRAN
 	-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
 		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
@@ -65,8 +65,6 @@ BEGIN TRAN
 		
 		--Cap nhat don thuoc
 	BEGIN TRY
-		UPDATE DONTHUOC SET SoLuong = @SoLuong WHERE MaDonThuoc = @MaDonThuoc AND MaThuoc = @MaThuoc
-
 		IF (@SoLuong < @SoLuongGoc)
 		BEGIN
 			UPDATE THUOC SET SoLuongTon = SoLuongTon + (@SoLuongGoc - @SoLuong) WHERE MaThuoc = @MaThuoc
@@ -76,6 +74,8 @@ BEGIN TRAN
 		BEGIN
 			UPDATE THUOC SET SoLuongTon = SoLuongTon - (@SoLuong - @SoLuongGoc) WHERE MaThuoc = @MaThuoc
 		END
+		
+		UPDATE DONTHUOC SET SoLuong = @SoLuong WHERE MaDonThuoc = @MaDonThuoc AND MaThuoc = @MaThuoc
 
 	END TRY
 		BEGIN CATCH

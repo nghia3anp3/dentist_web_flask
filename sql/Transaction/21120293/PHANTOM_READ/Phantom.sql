@@ -76,7 +76,7 @@ BEGIN TRAN
 		BEGIN
 			UPDATE THUOC SET SoLuongTon = SoLuongTon - (@SoLuong - @SoLuongGoc) WHERE MaThuoc = @MaThuoc
 		END
-
+	
 	END TRY
 		BEGIN CATCH
 			DECLARE @ErrorMsg VARCHAR(2000)

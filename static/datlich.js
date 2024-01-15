@@ -65,14 +65,20 @@ phoneInput.addEventListener('blur', function() {
                 } else {
                     const infoDiv = document.getElementById('doctor_fields');
                     const selectElement = document.createElement('select'); // Tạo phần tử select
+                    selectElement.id = 'doctors';
                 
-                    // Lặp qua mảng data.fullname để thêm các tùy chọn vào select
-                    data.full_name.forEach(fullname => {
+                    var keys = Object.keys(data);
+
+                    for (var i = 0; i < data[keys[0]].length; i++) {
+                        var fullName = data[keys[0]][i];
+                        var id = data[keys[1]][i];
+
                         const option = document.createElement('option'); // Tạo phần tử option
-                        option.value = fullname; // Gán giá trị cho option từ tên bác sĩ trong fullname
-                        option.textContent = fullname; // Đặt nội dung hiển thị của option là tên bác sĩ
-                        selectElement.appendChild(option); // Thêm option vào select
-                    });
+                        option.id = id
+                        option.value = fullName; // Gán giá trị cho option từ tên bác sĩ trong fullname
+                        option.textContent = fullName; // Đặt nội dung hiển thị của option là tên bác sĩ
+                        selectElement.appendChild(option); 
+                    }
                 
                     const infoHTML = `
                         Chọn bác sĩ:
@@ -109,3 +115,37 @@ phoneInput.addEventListener('blur', function() {
         }
     });
 });
+
+document.getElementById("signupButton").addEventListener("click", function () {
+    var formData = {
+      phone: document.getElementById("phone").value,
+      full_name: document.getElementById("full_name").value,
+      date: document.getElementById("date").value,
+      address: document.getElementById("address").value,
+      time: document.getElementById("time").value,
+      date_doctor: document.getElementById("date_doctor").value,
+      doctor_id: document.getElementById("doctors").options[document.getElementById("doctors").selectedIndex].id
+    };
+  
+    console.log(formData); // Xem giá trị của formData trong console để kiểm tra
+  
+    fetch("/datlich_nghia", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data); // Xem phản hồi từ server trong console để kiểm tra
+      if (data.status === "success") {
+        alert("Lịch hẹn đã được đặt thành công!");
+      } else {
+        alert("Đã có lỗi xảy ra: " + data.message);
+      }
+    })
+    .catch(err => {
+      alert("Đã có lỗi xảy ra trong quá trình gửi yêu cầu.");
+    });
+  });

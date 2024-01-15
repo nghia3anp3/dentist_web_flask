@@ -153,14 +153,17 @@ def submit_form():
         if existing_entry:
             cursor.close()
             return jsonify({'status': 'error', 'message': 'Số điện thoại này đã được đăng ký!'})
+        try:
+            cursor.execute("INSERT INTO NGUOIDUNG (SDT, HoTen, NgaySinh, DiaChi) VALUES (?, ?, ?, ?)",
+                        (phone, full_name, appointment_date, address))   
+            cursor.execute("INSERT INTO TAIKHOAN (SDT, LoaiND, MatKhau, TrangThai) VALUES (?, 'Khach', ?, 'True')",
+                        (phone, password))
+            cursor.commit()
+            cursor.close()
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)})
 
-        cursor.execute("INSERT INTO NGUOIDUNG (SDT, HoTen, NgaySinh, DiaChi) VALUES (?, ?, ?, ?)",
-                       (phone, full_name, appointment_date, address))   
-        cursor.execute("INSERT INTO TAIKHOAN (SDT, LoaiND, MatKhau, TrangThai) VALUES (?, 'Khach', ?, 'True')",
-                       (phone, password))
-        conn.commit()
-        cursor.close()
-        return jsonify({'status': 'success', 'message': 'Đăng ký thành công'})
+    return jsonify({'status': 'success', 'message': 'Đăng ký thành công'})
     
 @app.route('/search', methods=['POST'])
 def search():
@@ -193,12 +196,13 @@ def time_date():
     rows = cursor.fetchall()
     result = {}
     result["full_name"] = []
-
+    result["id"] = []
     if (len(rows) == 0):
         return {"message": 'Không có bác sĩ nào đang rảnh! Vui lòng chọn lại'}
     for row in rows:
         print(row)
         result['full_name'].append(row[1])
+        result['id'].append(row[0])
     return jsonify(result)
 
 
@@ -968,6 +972,41 @@ def register():
     elif result_value == 0:
         return jsonify (0)
 
+@app.route('/datlich_nghia', methods=['POST'])
+def datlich_nghia():
+    data = request.json
+    print(data)
+
+    sdt = data['phone']
+    hoten = data['full_name']    
+    ngaysinh = data['date']
+    diachi = data['address']
+    ngaykham = data['date_doctor']
+    giokham = data['time']
+    id = data['doctor_id']
+    try:
+        cursor = conn.cursor()
+        query = """
+        SET NOCOUNT ON;
+        DECLARE @RESULT INT
+        EXEC @RESULT = sp_DatLichKham ?, ?, ?, ?, ?, ?, ?
+        SELECT @RESULT AS COL
+        """
+        cursor.execute(query, (sdt , hoten , ngaysinh , diachi , ngaykham , giokham, id))
+        result_value = cursor.fetchall()
+        print(result_value)
+        conn.commit()
+        cursor.close()
+        if result_value[0] == 1 :
+            return jsonify({'status':'success','message':'Đăng ký thành công lịch khám!'})  
+        elif result_value[0] == 0:
+            return jsonify({'status':'error','message':'Không thành công, vui lòng kiểm tra lại!'})  
+    except Exception as e:
+        return jsonify({'status':'error','message':str(e)})  
+    
+    return jsonify({'status':'success','message':'Đăng ký thành công lịch khám!'})  
+
+
 @app.route('/register_have_info', methods=['GET'])
 def register_info():
     # Get form data from the request
@@ -988,8 +1027,8 @@ def register_info():
     query = """
     SET NOCOUNT ON;
     DECLARE @RESULT INT
- EXEC @RESULT = sp_DatLichKham '{}', N'{}','{}', N'{}', '{}', '{}', '{}'
- SELECT @RESULT AS COL
+    EXEC @RESULT = sp_DatLichKham '{}', N'{}','{}', N'{}', '{}', '{}', '{}'
+    SELECT @RESULT AS COL   
     """.format (sdt , hoten , ngaysinh , diachi , ngaykham , giokham , bacsi)
     # cursor.execute("{CALL sp_DatLichKham(?, ? ,?, ? ,? ,? , ?)}", (sdt ,hoten, ngaysinh, diachi, ngaykham, giokham, bacsi))
     cursor.execute (query)

@@ -82,7 +82,7 @@
                     <div class="field">
                         <h1>Số điện thoại</h1>
                         <div class="control has-icons-left">
-                          <input type="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
+                          <input type="phone" id="phone" placeholder="0123456789" class="input" name="phone" autocomplete="additional-name">
                           <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
                           </span>
@@ -92,7 +92,7 @@
                       <div class="field">
                         <h1>Họ và tên</h1>
                         <div class="control has-icons-left">
-                          <input type="text" placeholder="Lê A" class="input" name="full_name" required>
+                          <input type="text" id="full_name" placeholder="Lê A" class="input" name="full_name" required>
                           <span class="icon is-small is-left">  
                             <i class="fa-solid fa-signature"></i>
                           </span>
@@ -102,7 +102,7 @@
                       <div class="field">
                         <h1>Ngày sinh</h1>
                         <div class="control has-icons-left">
-                        <input class="input" type="date" name="date">
+                        <input class="input" id="date" type="date" name="date">
                           <span class="icon is-small is-left">
                             <i class="fa-regular fa-calendar"></i>
                           </span>
@@ -112,7 +112,7 @@
                       <div class="field">
                         <h1>Địa chỉ</h1>
                         <div class="control has-icons-left">
-                            <input type="text" placeholder="Lê A" class="input" name="address" required>
+                            <input type="text" placeholder="223 Nguyễn Văn Trỗi" id="address" class="input" name="address" required>
                             <span class="icon is-small is-left">
                                 <i class="fa-solid fa-location-dot"></i>
                             </span>
@@ -124,7 +124,7 @@
                     <div class="field" id="timeInput">
                         <h1>Giờ khám</h1>
                         <div class="control has-icons-left">
-                            <input type="time" class="input" name="time" required>
+                            <input type="time" id="time" class="input" name="time" required>
                             <span class="icon is-small is-left">
                                 <i class="fa-regular fa-clock"></i>
                             </span>
@@ -134,7 +134,7 @@
                     <div class="field" id="dateInput">
                         <h1>Ngày khám</h1>
                         <div class="control has-icons-left">
-                        <input class="input" type="date" name="date_doctor">
+                        <input class="input" id="date_doctor" type="date" name="date_doctor">
                             <span class="icon is-small is-left">
                             <i class="fa-regular fa-calendar"></i>
                             </span>
@@ -163,7 +163,7 @@
   <script src="static/datlich.js"></script>
   <script src="static/jquery-3.7.1.min.js"></script>
   <script>
-     $(document).ready(function() {
+    $(document).ready(function() {
         $("#nut_home").click(function() {
           location.replace('/home');
         })

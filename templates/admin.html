@@ -204,7 +204,7 @@
                           <div class="field">
                             <h1>Mậu khẩu</h1>
                             <div class="control has-icons-left">
-                            <input class="input" type="password" name="password">
+                            <input class="input" placeholder="*******" type="password" name="password">
                               <span class="icon is-small is-left">
                                 <i class="fa-regular fa-calendar"></i>
                               </span>
@@ -236,7 +236,7 @@
                           <div class="field">
                             <h1>Địa chỉ</h1>
                             <div class="control has-icons-left">
-                                <input type="text" placeholder="Lê A" class="input" name="address" required>
+                                <input type="text" placeholder="12 Phạm Văn Đồng" class="input" name="address" required>
                                 <span class="icon is-small is-left">
                                     <i class="fa-solid fa-location-dot"></i>
                                 </span>
@@ -491,8 +491,14 @@
           }
         },
         error: function(err) {
-          // Handle any errors that occur during the request
-          console.error('Error:', err);
+        // Handle any errors that occur during the request
+        if (err.responseJSON && err.responseJSON.status === 'error') {
+            // Display an alert for error message from the server
+            alert(err.responseJSON.message);
+        } else {
+            // Display a generic error message for other types of errors
+            alert("An error occurred during the request.");
+        }
         }
       });
     });

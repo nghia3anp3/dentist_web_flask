@@ -6,7 +6,7 @@ SELECT * FROM tb_ThuocHienHanh()
 SELECT * FROM DONTHUOC
 ---
 DECLARE @RT INT
-EXEC @RT = USP_TaoDonThuoc '6', N'Paracetamol', '100'
+EXEC @RT = USP_TaoDonThuoc '6', N'Paracetamol', '40'
 
 IF @RT = 1
 	PRINT N'Tạo đơn thuốc thành công'

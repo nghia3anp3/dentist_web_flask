@@ -1,26 +1,21 @@
-$(document).ready(function() {
-    $('#signupButton').on('click', function() {
-      var formData = $('#signupForm').serialize(); // Serialize form data
-      
-      $.ajax({
-        type: 'POST',
-        url: '/submit_form',
-        data: formData,
-        success: function(response) {
-          // Handle the JSON response from Flask
-          if (response.status === 'error') {
-            // Display an alert for error message
-            alert(response.message);
-          } else {
-            // Show success message or perform other actions if needed
-            alert('Form submitted successfully');
-            // Optionally, you can redirect the user or perform other actions on success
-          }
-        },
-        error: function(err) {
-          // Handle any errors that occur during the request
-          console.error('Error:', err);
-        }
-      });
+document.getElementById('signupButton').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    var formData = new FormData(document.getElementById('signupForm'));
+
+    fetch('/submit_form', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'error') {
+        alert(data.message);
+      } else if (data.status === 'success') {
+        alert(data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
   });

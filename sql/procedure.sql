@@ -147,7 +147,7 @@ END;
 GO
 
 CREATE
--- ALTER
+--ALTER
 PROCEDURE sp_TimThuocBangMa
     @MaThuoc char(10)
 as
@@ -157,8 +157,8 @@ begin-- Kiem tra: thuoc can sua co ton tai trong kho thuoc khong
         PRINT N'Mã thuốc không tồn tại trong kho hiện hành'
         ROLLBACK TRAN
         RETURN
-        SELECT * FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc
 	END
+	SELECT * FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc
 END
 GO
 -- EXEC sp_TimThuocBangTen 'AM'
