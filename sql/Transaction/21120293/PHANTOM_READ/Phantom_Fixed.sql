@@ -2,7 +2,7 @@
 CREATE OR ALTER PROCEDURE USP_TaoDonThuoc
 	@MaHoSo int, @TenThuoc char(30), @SoLuong int
 AS
-SET TRAN ISOLATION LEVEL Serializable
+SET TRAN ISOLATION LEVEL REPEATABLE READ
 BEGIN TRAN
 	-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
 		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
