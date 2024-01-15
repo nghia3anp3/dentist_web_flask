@@ -157,12 +157,8 @@ begin-- Kiem tra: thuoc can sua co ton tai trong kho thuoc khong
         PRINT N'Mã thuốc không tồn tại trong kho hiện hành'
         ROLLBACK TRAN
         RETURN
-	END
-<<<<<<< HEAD
-	SELECT * FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc
-=======
+    END
     SELECT * FROM tb_ThuocHienHanh() WHERE MaThuoc = @MaThuoc
->>>>>>> 904c90d09609725fb0efa62df523f8dd4cd95e97
 END
 GO
 -- EXEC sp_TimThuocBangTen 'AM'
