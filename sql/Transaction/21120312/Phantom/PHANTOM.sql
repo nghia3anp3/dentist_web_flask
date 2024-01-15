@@ -4,11 +4,21 @@ GO
 CREATE OR ALTER PROCEDURE USP_TimThuocBangTen
 				@TenThuoc VARCHAR(20)
 AS 
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
 	DECLARE @SubName VARCHAR(23) = '%' + @TenThuoc + '%'
-	SELECT *
-	FROM tb_ThuocHienHanh()
-	WHERE TenThuoc LIKE @SubName
+
+	IF NOT EXISTS (SELECT * FROM tb_ThuocHienHanh() WHERE TenThuoc LIKE @SubName)
+	BEGIN
+		PRINT N'Không tồn tại thuốc trong kho hiện hành'
+        ROLLBACK TRAN
+		RETURN 0
+	END
+	
+	DECLARE @SoThuocTrungTen INT
+	SELECT @SoThuocTrungTen = COUNT(*) FROM tb_ThuocHienHanh() WHERE TenThuoc LIKE @SubName
+	SELECT @SoThuocTrungTen AS SoLuongThuocTimThay
+	--PRINT N'Số lượng thuốc có một phần tên là "' + @TenThuoc + '": ' + CAST(@SoThuocTrungTen AS VARCHAR)
 
 	--ĐỂ TEST
 	WAITFOR DELAY '0:0:05'
@@ -24,6 +34,7 @@ GO
 CREATE OR ALTER PROCEDURE USP_ThemThuoc
 	@TenThuoc char(30),	@DonGia int, @ChiDinh nvarchar(100), @SoLuongTon int, @NgayHetHan date
 AS
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
 	-- Tu tang Ma thuoc
 	DECLARE @last char(10)

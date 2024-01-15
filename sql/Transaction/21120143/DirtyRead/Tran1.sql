@@ -2,12 +2,15 @@
 GO
 
 DECLARE @RT INT
-EXEC @RT = USP_TaoDonThuoc_ThatBai 5, 'Paracetamol' , 10
---EXEC @RT = USP_TaoDonThuoc_ThatBai 5, 'Delta' , 10
+EXEC @RT = USP_TaoDonThuoc 6, 'Celpha', 10
+
+--DELETE FROM DONTHUOC WHERE MaDonThuoc = 5
 
 IF @RT = 0
 	PRINT N'TẠO ĐƠN THUỐC THẤT BẠI'
 ELSE
 	PRINT N'TẠO ĐƠN THUỐC THÀNH CÔNG'
 
-SELECT * FROM tb_ThuocHienHanh()
+--SELECT * FROM tb_ThuocHienHanh()
+
+/* TRANS ROLLBACK */

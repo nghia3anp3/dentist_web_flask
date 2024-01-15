@@ -1,77 +1,23 @@
 ﻿USE HQT_CSDL
 GO
 
-CREATE OR ALTER PROCEDURE USP_TaoDonThuoc_ThatBai
-	@MaHoSo int, @TenThuoc char(30), @SoLuong int
-AS
-BEGIN TRAN
-	BEGIN TRY
-		-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
-		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
-		BEGIN
-			PRINT N'Thuốc không tồn tại trong kho hiện hành'
-			ROLLBACK TRAN
-			RETURN 0
-		END
-
-		-- Kiem tra so luong ton
-		DECLARE @SoLuongTon int 
-		SELECT @SoLuongTon = SoLuongTon FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
-
-		IF (@SoLuong > @SoLuongTon)
-		BEGIN
-			PRINT N'Vượt quá số lượng tồn'
-			ROLLBACK TRAN
-			RETURN 0
-		END
-
-		-- Tao don thuoc
-		PRINT N'TẠO ĐƠN'
-		DECLARE @MaThuoc char(10), @DonGia int
-		SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
-
-		INSERT INTO DONTHUOC VALUES (@MaHoSo, @MaThuoc, @SoLuong, @DonGia)
-		UPDATE THUOC SET SoLuongTon = @SoLuongTon - @SoLuong WHERE MaThuoc = @MaThuoc
-
-		--ĐỂ TEST
-		WAITFOR DELAY '0:0:05'
-		ROLLBACK TRAN 
-		RETURN 0
-	END TRY
-
-	BEGIN CATCH
-		DECLARE @ErrorMsg VARCHAR(2000)
-		SELECT @ErrorMsg = N'Lỗi: ' + ERROR_MESSAGE()
-		RAISERROR(@ErrorMsg, 16,1)
-		ROLLBACK TRAN
-		RETURN 0
-	END CATCH
-
-COMMIT TRAN
-RETURN 1
-
-GO
-
--------------------------------------------------------------
-CREATE OR ALTER PROCEDURE USP_TaoDonThuoc_ThanhCong
+CREATE OR ALTER PROCEDURE USP_TaoDonThuoc
 	@MaHoSo int, @TenThuoc char(30), @SoLuong int
 AS
 --SET TRAN ISOLATION LEVEL READ UNCOMMITTED
 BEGIN TRAN
 	BEGIN TRY
 		-- Kiem tra ten thuoc ton tai trong kho hien hanh khong
-		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM tb_ThuocHienHanh()))
+		IF (@TenThuoc NOT IN (SELECT TenThuoc FROM THUOC WHERE TrangThai = 1 AND SoLuongTon > 0))
 		BEGIN
 			PRINT N'Thuốc không tồn tại trong kho hiện hành'
 			ROLLBACK TRAN
 			RETURN 0
 		END
 
-		--WAITFOR DELAY '0:0:05'
-
 		-- Kiem tra so luong ton
 		DECLARE @SoLuongTon int 
-		SELECT @SoLuongTon = SoLuongTon FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
+		SELECT @SoLuongTon = SoLuongTon FROM THUOC WHERE TrangThai = 1 AND SoLuongTon > 0 AND TenThuoc = @TenThuoc
 
 		IF (@SoLuong > @SoLuongTon)
 		BEGIN
@@ -81,12 +27,15 @@ BEGIN TRAN
 		END
 
 		-- Tao don thuoc
-		PRINT N'TẠO ĐƠN'
 		DECLARE @MaThuoc char(10), @DonGia int
-		SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM tb_ThuocHienHanh() WHERE TenThuoc = @TenThuoc
+		SELECT @MaThuoc = MaThuoc, @DonGia = DonGia FROM THUOC WHERE TrangThai = 1 AND SoLuongTon > 0 AND TenThuoc = @TenThuoc
 
-		INSERT INTO DONTHUOC VALUES (@MaHoSo, @MaThuoc, @SoLuong, @DonGia)
 		UPDATE THUOC SET SoLuongTon = @SoLuongTon - @SoLuong WHERE MaThuoc = @MaThuoc
+
+		WAITFOR DELAY '0:0:05'
+		
+		--insert một đơn thuốc làm rollback là oke
+		INSERT INTO DONTHUOC VALUES (@MaHoSo, @MaThuoc, @SoLuong, @DonGia)
 	END TRY
 
 	BEGIN CATCH
@@ -99,5 +48,3 @@ BEGIN TRAN
 
 COMMIT TRAN
 RETURN 1
-
-GO
